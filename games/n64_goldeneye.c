@@ -31,6 +31,7 @@
 #define GOLD_camx 0x000D30A8 - 0x000D2F60 // 0x148
 #define GOLD_camy 0x000D30B8 - 0x000D2F60 // 0x158
 #define GOLD_controlscheme 0x800D59B8 - 0x800D2F60 // 0x2A58
+#define GOLD_fov 0x800D4124 - 0x800D2F60 //0x11C4
 
 // STATIC addresses
 #define GOLD_playerbase 0x80079EE0
@@ -104,8 +105,8 @@ static void N64_GOLD_Inject(void)
 
 	const float looksensitivity = (float)sensitivity / 40.f;
 
-	uint32_t ingame1 = N64_MEM_ReadUInt(GOLD_isingame1);
-	uint32_t ingame2 = N64_MEM_ReadUInt(GOLD_isingame2);
+	// uint32_t ingame1 = N64_MEM_ReadUInt(GOLD_isingame1);
+	// uint32_t ingame2 = N64_MEM_ReadUInt(GOLD_isingame2);
 	
 	float cursorx = N64_MEM_ReadFloat(GOLD_menucursorx); // bounds: 20-420
 	float cursory = N64_MEM_ReadFloat(GOLD_menucursory); // 20-310
@@ -120,19 +121,21 @@ static void N64_GOLD_Inject(void)
 	N64_MEM_WriteFloat(GOLD_menucursory, cursory);
 
 	// lock control scheme to 1.4 Goodnight
-	uint32_t controls = N64_MEM_ReadUInt(playerbase + GOLD_controlscheme);
-	if (controls != 0x3)
-	{
-		N64_MEM_WriteUInt(playerbase + GOLD_controlscheme, 0x00000003);
-		N64_MEM_WriteUInt(playerbase + GOLD_controlscheme + 0x4, 0xFFFFFFE2);
-		N64_MEM_WriteUInt(playerbase + GOLD_controlscheme + 0x8, 0x405FFFEE);
-		N64_MEM_WriteUInt(playerbase + GOLD_controlscheme + 0xC, 0xFFFFFFE2);
-	}
+	//uint32_t controls = N64_MEM_ReadUInt(playerbase + GOLD_controlscheme);
+	// if (controls != 0x3)
+	// {
+	// 	N64_MEM_WriteUInt(playerbase + GOLD_controlscheme, 0x00000003);
+	// 	N64_MEM_WriteUInt(playerbase + GOLD_controlscheme + 0x4, 0xFFFFFFE2);
+	// 	N64_MEM_WriteUInt(playerbase + GOLD_controlscheme + 0x8, 0x405FFFEE);
+	// 	N64_MEM_WriteUInt(playerbase + GOLD_controlscheme + 0xC, 0xFFFFFFE2);
+	// }
 
 	if (!(N64_GOLD_DetectPlayer())) // return if no playerbase found
 		return;
 
-	const float fov = 0.8f; // just an arbitrary  fov value
+	
+	float fov = N64_MEM_ReadFloat(playerbase + GOLD_fov);
+	// float fov = 60;
 
 
 	if (N64_MEM_ReadUInt(GOLD_isintank))
@@ -144,14 +147,14 @@ static void N64_GOLD_Inject(void)
 	else {
 		float camx = N64_MEM_ReadFloat(playerbase + GOLD_camx);
 		camx /= 360.f;
-		camx += (float)xmouse / 10.f * looksensitivity / (360.f / TAU) / (1.2f / fov); // normal calculation method for X
+		camx += (float)xmouse / 10.f * looksensitivity / (360.f / TAU) / (90.f / fov); // normal calculation method for X
 		camx *= 360.f;
 		N64_MEM_WriteFloat(playerbase + GOLD_camx, camx);
 	}
 
 	float camy = N64_MEM_ReadFloat(playerbase + GOLD_camy);
 	camy /= 360.f;
-	camy -= (float)ymouse / 10.f * looksensitivity / (360.f / TAU) / (1.2f / fov); // normal calculation method for X
+	camy -= (float)ymouse / 10.f * looksensitivity / (360.f / TAU) / (90.f / fov); // normal calculation method for X
 	camy *= 360.f;
 	N64_MEM_WriteFloat(playerbase + GOLD_camy, camy);
 }
