@@ -37,7 +37,7 @@
 #define PS2_NF_crosshairx 0x228
 #define PS2_NF_crosshairy 0x22C
 #define PS2_NF_health 0x9A4
-//#define PS2_NF_lookspring 0x80B96FA8 - 0x80B96DEC
+#define PS2_NF_lookspring 0x240
 #define PS2_NF_sentryx 0x1DC
 #define PS2_NF_sentryy 0x1D8
 // STATIC ADDRESSES BELOW
@@ -87,8 +87,8 @@ static void PS2_NF_Inject(void)
 	const float crosshairsensitivity = ((float)crosshair / 100.f) * looksensitivity;
 	if(PS2WITHINMEMRANGE(playerbase)) // if playerbase is valid
 	{
-		// if(PS2_MEM_ReadInt(playerbase + PS2_NF_lookspring) == 0x03010002) // disable lookspring when spawned
-		// 	PS2_MEM_WriteInt(playerbase + PS2_NF_lookspring, 0x01010002);
+		if(PS2_MEM_ReadUInt(playerbase + PS2_NF_lookspring) == 0x02000103) // disable lookspring when spawned
+			PS2_MEM_WriteUInt(playerbase + PS2_NF_lookspring, 0x02000101);
 		float camx = PS2_MEM_ReadFloat(playerbase + PS2_NF_camx);
 		float camy = PS2_MEM_ReadFloat(playerbase + PS2_NF_camy);
 		const float fov = PS2_MEM_ReadFloat(playerbase + PS2_NF_fov);
@@ -98,6 +98,7 @@ static void PS2_NF_Inject(void)
 		{
 			camx -= (float)xmouse / 10.f * looksensitivity / (360.f / TAU) / (fov / 1.f); // normal calculation method for X
 			camy += (float)(!invertpitch ? -ymouse : ymouse) / 10.f * looksensitivity / 90.f / (fov / 1.f); // normal calculation method for Y
+			
 			while(camx <= -PI)
 				camx += TAU;
 			while(camx >= PI)
