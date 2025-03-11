@@ -160,11 +160,14 @@ static void GC_RE4_Inject(void)
 	float aimY = MEM_ReadFloat(RE4_AIMY); //aimY 2.0
 
 	// float camX = MEM_ReadFloat(RE4_CAMX); //while not aiming
-	//float camY = MEM_ReadFloat(RE4_CAMY);
+	float camY = MEM_ReadFloat(RE4_CAMY);
 
+
+	camY += (float)(!invertpitch ? -ymouse : ymouse) * looksensitivity / (scale * 12.f);
+	camY = ClampFloat(camY, -1.4f, 1.4f);
+	
 
 	// camX += (float)-xmouse * looksensitivity / (scale * 2);
-	// camY += (float)(!invertpitch ? -ymouse : ymouse) * looksensitivity / (scale * 2);
 	// camX = ClampFloat(camX, -2.0f, 2.f);
 
 	
@@ -204,14 +207,13 @@ static void GC_RE4_Inject(void)
 	}else{
 		MEM_WriteFloat(RE4_AIMY, aimY);  //aimY 2.0
 	}
-	
-		
 
+
+	
+	// MEM_WriteFloat(RE4_CAMX, camX);
+	MEM_WriteFloat(RE4_CAMY, camY);
+	
 
 	MEM_WriteFloat((aimBaseY + RE4_AIMY_OFFSET), (aimY*1.570796371f));	
-	
-
-	// MEM_WriteFloat(RE4_CAMX, camX);
-	MEM_WriteFloat(RE4_CAMY, aimY*1.4f);
 	
 }
