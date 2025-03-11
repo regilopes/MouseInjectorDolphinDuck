@@ -24,9 +24,8 @@
 #include "game.h"
 
 // TODO:
-//find reliable aimY pointer
-// -del lago harpoon aiming not working on first try
-// -aimY2 not working on del lago Merchant and gaming crashing
+//-find reliable aimY pointer
+//-del lago harpoon aiming not working on first try
 
 #define TAU 6.2831853f // 0x40C90FDB
 //aimBase pointer
@@ -59,7 +58,7 @@
 
 //cam coords
 // #define RE4_CAMX 0x80212928
-// #define RE4_CAMY 0x80212924
+#define RE4_CAMY 0x80212924
 
 
 // #define RE4_fFOV1 0x102DCC
@@ -123,6 +122,11 @@ static void GC_RE4_Inject(void)
 	if (MEM_ReadInt(0x8091D5F8) == 0x39600004) //thompson
 		MEM_WriteInt(0x8091D5F8, 0x60000000);
 
+	//disabling camY re-centering
+	if (MEM_ReadUInt(0x800BBDBC) == 0xD1BF0200U)
+		MEM_WriteUInt(0x800BBDBC, 0x60000000U);
+	
+
 	if(xmouse == 0 && ymouse == 0) // if mouse is idle
 		return;
 		
@@ -132,8 +136,8 @@ static void GC_RE4_Inject(void)
 
 	//checking and disabling aim shake function so aim on Y axis doesn't need
 	//an address with a pointer to work on all rooms
-	// if (MEM_ReadUInt(RE4_LOCK_RAND) == 0x9421ffc8U) 
-	//  	MEM_WriteUInt(RE4_LOCK_RAND, 0x4e800020U);
+	if (MEM_ReadUInt(RE4_LOCK_RAND) == 0x9421ffc8U) 
+	 	MEM_WriteUInt(RE4_LOCK_RAND, 0x4e800020U);
 
 	// if (MEM_ReadUInt(RE4_LOCK_PITCH) == 0xd02b0004U) //checking and disabling aimY reset to 0 when aiming
 	//  	MEM_WriteUInt(RE4_LOCK_PITCH, 0x60000000U);	
@@ -156,7 +160,7 @@ static void GC_RE4_Inject(void)
 	float aimY = MEM_ReadFloat(RE4_AIMY); //aimY 2.0
 
 	// float camX = MEM_ReadFloat(RE4_CAMX); //while not aiming
-	// float camY = MEM_ReadFloat(RE4_CAMY);
+	//float camY = MEM_ReadFloat(RE4_CAMY);
 
 
 	// camX += (float)-xmouse * looksensitivity / (scale * 2);
@@ -176,7 +180,7 @@ static void GC_RE4_Inject(void)
 	MEM_WriteFloat(aimBaseX + RE4_AIMX, aimX);
 
 
-	if(MEM_ReadUInt8(RE4_WEPID) == 0x9){ //check if rifle is equiped
+	if(MEM_ReadUInt8(RE4_WEPID) == 0x9 || MEM_ReadUInt8(RE4_WEPID) == 0x0A){ //check if rifle is equiped
 		float scopeY = MEM_ReadFloat(RE4_SCOPEY);
 		scopeY += (float)(!invertpitch ? ymouse : -ymouse) * looksensitivity * (fov / 45.f) / (scale * 45.f);
 		scopeY = ClampFloat(scopeY, -1.22f, 1.22f);		
@@ -208,6 +212,6 @@ static void GC_RE4_Inject(void)
 	
 
 	// MEM_WriteFloat(RE4_CAMX, camX);
-	// MEM_WriteFloat(RE4_CAMY, camY);
+	MEM_WriteFloat(RE4_CAMY, aimY*1.4f);
 	
 }
