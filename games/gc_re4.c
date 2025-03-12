@@ -24,13 +24,12 @@
 #include "game.h"
 
 // TODO:
-//-find reliable aimY pointer
 //-del lago harpoon aiming not working on first try
 
 #define TAU 6.2831853f // 0x40C90FDB
 //aimBase pointer
 #define RE4_AIMBASEX 0x8027DF20
-#define RE4_AIMBASEY_1 0x80278C08
+#define RE4_AIMBASEY 0x8027F180
 
 //X axis
 #define RE4_AIMX 0xA4 //offset from aimBaseX
@@ -38,8 +37,8 @@
 #define RE4_BHARPOONX 0x81085B64
 
 //Y axis
-#define RE4_AIMY 0x8021873C //2.0
-#define RE4_AIMY_OFFSET 0x7428
+#define RE4_AIMY 0x468
+#define RE4_AIMY2 0x8021873C //aimY 2.0
 #define RE4_SCOPEY 0x80212A4C
 #define RE4_HARPOONY 0x81052D20
 
@@ -98,6 +97,9 @@ static uint8_t GC_RE4_Status(void)
 //==========================================================================
 static void GC_RE4_Inject(void)
 {
+	if(xmouse == 0 && ymouse == 0) // if mouse is idle
+		return;
+
 	//cam dist to far
 	if (MEM_ReadInt(0x800BC32C) == 0x4182000C) //
 		MEM_WriteInt(0x800BC32C, 0x60000000);
@@ -126,24 +128,19 @@ static void GC_RE4_Inject(void)
 	if (MEM_ReadUInt(0x800BBDBC) == 0xD1BF0200U)
 		MEM_WriteUInt(0x800BBDBC, 0x60000000U);
 	
-
-	if(xmouse == 0 && ymouse == 0) // if mouse is idle
-		return;
 		
-
-	aimBaseX = MEM_ReadUInt(RE4_AIMBASEX);
-	aimBaseY = MEM_ReadUInt(RE4_AIMBASEY_1);
 
 	//checking and disabling aim shake function so aim on Y axis doesn't need
 	//an address with a pointer to work on all rooms
-	if (MEM_ReadUInt(RE4_LOCK_RAND) == 0x9421ffc8U) 
-	 	MEM_WriteUInt(RE4_LOCK_RAND, 0x4e800020U);
+	// if (MEM_ReadUInt(RE4_LOCK_RAND) == 0x9421ffc8U) 
+	//  	MEM_WriteUInt(RE4_LOCK_RAND, 0x4e800020U);
 
 	// if (MEM_ReadUInt(RE4_LOCK_PITCH) == 0xd02b0004U) //checking and disabling aimY reset to 0 when aiming
 	//  	MEM_WriteUInt(RE4_LOCK_PITCH, 0x60000000U);	
 
-	
 
+	aimBaseX = MEM_ReadUInt(RE4_AIMBASEX);
+	aimBaseY = MEM_ReadUInt(RE4_AIMBASEY);
 	
 
 	float fov = MEM_ReadFloat(RE4_FOV);
@@ -152,12 +149,9 @@ static void GC_RE4_Inject(void)
 	float scale = 800.f;
 	
 
-	//aimBaseX = MEM_ReadPointer(RE4_AIMBASEPTR_X);
-	//aimBaseY = MEM_ReadPointer(RE4_AIMBASEPTR_Y);
-
 	float aimX = MEM_ReadFloat(aimBaseX + RE4_AIMX); //while aiming
 	//float aimY = MEM_ReadFloat(0x811924C8); 
-	float aimY = MEM_ReadFloat(RE4_AIMY); //aimY 2.0
+	float aimY = MEM_ReadFloat(RE4_AIMY2); //aimY 2.0
 
 	// float camX = MEM_ReadFloat(RE4_CAMX); //while not aiming
 	float camY = MEM_ReadFloat(RE4_CAMY);
@@ -182,13 +176,15 @@ static void GC_RE4_Inject(void)
 	
 	MEM_WriteFloat(aimBaseX + RE4_AIMX, aimX);
 
-
-	if(MEM_ReadUInt8(RE4_WEPID) == 0x9 || MEM_ReadUInt8(RE4_WEPID) == 0x0A){ //check if rifle is equiped
+	//check weapon w/ scope is equiped
+	if(MEM_ReadUInt8(RE4_WEPID) == 0x9 ||  //rifle
+	   MEM_ReadUInt8(RE4_WEPID) == 0x0A || // a. rifle
+	   MEM_ReadUInt8(RE4_WEPID) == 0x0D){  // r. launcher
 		float scopeY = MEM_ReadFloat(RE4_SCOPEY);
 		scopeY += (float)(!invertpitch ? ymouse : -ymouse) * looksensitivity * (fov / 45.f) / (scale * 45.f);
 		scopeY = ClampFloat(scopeY, -1.22f, 1.22f);		
 		MEM_WriteFloat(RE4_SCOPEY, scopeY);
-		MEM_WriteFloat(RE4_AIMY, aimY);  //aimY 2.0
+		MEM_WriteFloat(RE4_AIMY2, aimY);  //aimY 2.0
 	}else if(MEM_ReadUInt(RE4_HARPOON) == 0x00000001){ //check if it's aiming with harpoon
 		float harpoonY = MEM_ReadFloat(RE4_HARPOONY);
 		float harpoonX = MEM_ReadFloat(RE4_HARPOONX);
@@ -205,7 +201,7 @@ static void GC_RE4_Inject(void)
 		else
 			MEM_WriteFloat(RE4_BHARPOONX, bharpoonX);
 	}else{
-		MEM_WriteFloat(RE4_AIMY, aimY);  //aimY 2.0
+		MEM_WriteFloat(RE4_AIMY2, aimY);  //aimY 2.0
 	}
 
 
@@ -214,6 +210,6 @@ static void GC_RE4_Inject(void)
 	MEM_WriteFloat(RE4_CAMY, camY);
 	
 
-	MEM_WriteFloat((aimBaseY + RE4_AIMY_OFFSET), (aimY*1.570796371f));	
+	MEM_WriteFloat((aimBaseY + RE4_AIMY), (aimY*1.570796371f));
 	
 }
