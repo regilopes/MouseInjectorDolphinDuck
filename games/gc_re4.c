@@ -46,9 +46,11 @@
 //current room ID
 #define RE4_ROOMID 0x8027F7F9
 
-//weapon equiped
+//weapon equiped ID
 #define RE4_WEPID 0x8028478C
 
+//current player ID
+#define RE4_PLAYERID 0x80284794
 
 //aim functions
 #define RE4_LOCK_RAND 0x801447b8
@@ -107,7 +109,7 @@ static void GC_RE4_Inject(void)
 		MEM_WriteInt(0x800BC32C, 0x60000000);
 
 
-	//disabling camY re-centering
+	//disabling camY auto level
 	if (MEM_ReadUInt(0x800BBDBC) == 0xD1BF0200U)
 		MEM_WriteUInt(0x800BBDBC, 0x60000000U);
 
@@ -116,42 +118,78 @@ static void GC_RE4_Inject(void)
 	if (MEM_ReadInt(0x80044580) == 0x39200004)
 	MEM_WriteInt(0x80044580, 0x60000000);
 	
-	switch (MEM_ReadUInt8(RE4_WEPID)) //checking equiped weapon ID and disabling ready animation
+	switch (MEM_ReadUInt16(RE4_WEPID)) //checking equiped weapon ID and disabling ready animation
 	{
-	case (0x01): 
-		MEM_WriteInt(0x80920C38, 0x60000000); //punisher
-		break;
-	case (0x02): 
-		MEM_WriteInt(0x80923D84, 0x60000000); //handgun
-		break;
-	case (0x03): 
-		MEM_WriteInt(0x80928AE4, 0x60000000); //red9
-		break;
-	case (0x04): 
-		MEM_WriteInt(0x8092012C, 0x60000000); //blacktail
-		break;
-	case (0x05): 
-		MEM_WriteInt(0x8092C464, 0x60000000); //broken b.
-		break;
-	case (0x06): 
-		MEM_WriteInt(0x80927D6C, 0x60000000); //killer7
-		break;
-	case (0x07): 
-		MEM_WriteInt(0x8092346C, 0x60000000); //shotgun
-		break;
-	case (0x08): 
-		MEM_WriteInt(0x8091F02C, 0x60000000); //striker
-		break;
-	case (0x21): 
-		MEM_WriteInt(0x8092E58C, 0x60000000); //riot
-		break;
-	case (0x0B): 
-		MEM_WriteInt(0x80927F54, 0x60000000); //TMP
-		break;
-	case (0x0C): 
-		MEM_WriteInt(0x8091D5F8, 0x60000000); //chicago t.
+	case (0x0001): //punisher
+		if(MEM_ReadUInt8(RE4_PLAYERID) == 0x00) //leon
+			MEM_WriteInt(0x80920C38, 0x60000000);
+		if(MEM_ReadUInt8(RE4_PLAYERID) == 0x02) //ada
+			MEM_WriteInt(0x8091A3AC, 0x60000000);
+		
 		break;
 
+	case (0x0002): //handgun
+		if(MEM_ReadUInt8(RE4_PLAYERID) == 0x00) //leon
+			MEM_WriteInt(0x80923D84, 0x60000000); 
+		if(MEM_ReadUInt8(RE4_PLAYERID) == 0x05) //wesker
+			MEM_WriteInt(0x80923128, 0x60000000);
+		break;
+
+	case (0x0003): //red9
+		MEM_WriteInt(0x80928AE4, 0x60000000); 
+		break;
+
+	case (0x0203): //red9 w/ stock
+		MEM_WriteInt(0x80928AE4, 0x60000000); 
+		break;
+
+	case (0x0004): //blacktail
+		MEM_WriteInt(0x8092012C, 0x60000000); 
+		break;
+
+	case (0x0005): //broken b.
+		MEM_WriteInt(0x8092C464, 0x60000000); 
+		break;
+
+	case (0x0006): //killer7
+		if(MEM_ReadUInt8(RE4_PLAYERID) == 0x00) //leon
+			MEM_WriteInt(0x80927D6C, 0x60000000);
+		if(MEM_ReadUInt8(RE4_PLAYERID) == 0x05) //wesker
+			MEM_WriteInt(0x8092098C, 0x60000000);
+		break;
+
+	case (0x0007): //shotgun
+		MEM_WriteInt(0x8092346C, 0x60000000); 
+		break;
+
+	case (0x0008): //striker
+		MEM_WriteInt(0x8091F02C, 0x60000000); 
+		break;
+
+	case (0x0021): //riot
+		MEM_WriteInt(0x8092E58C, 0x60000000); 
+		break;
+
+	case (0x000B): //TMP 
+		if(MEM_ReadUInt8(RE4_PLAYERID) == 0x00) //leon
+			MEM_WriteInt(0x80927F54, 0x60000000); 
+		if(MEM_ReadUInt8(RE4_PLAYERID) == 0x02) //ada
+			MEM_WriteInt(0x80915dC0, 0x60000000);
+		if(MEM_ReadUInt8(RE4_PLAYERID) == 0x03) //hunk
+			MEM_WriteInt(0x8091A214, 0x60000000);
+		break;
+
+	case (0x020B): //TMP w/ stock
+		MEM_WriteInt(0x80927F54, 0x60000000); 
+		break;
+
+	case (0x000C): //chicago t.
+		MEM_WriteInt(0x8091D5F8, 0x60000000); 
+		break;
+
+	case (0x001C): //Krauser Bow
+		MEM_WriteInt(0x80a9a984, 0x60000000); 
+		break;
 	}
 	
 
@@ -201,11 +239,6 @@ static void GC_RE4_Inject(void)
 	aimY2 = ClampFloat(aimY2, -1.f, 1.f);
 	
 	
-// 	#define RE4_HARPOON_D 0x81052D30
-// #define RE4_HARPOON_N 0x8105FD3C
-
-//
-
 	//check if weapon w/ scope is equiped
 	if(MEM_ReadUInt8(RE4_WEPID) == 0x09 || // rifle
 	   MEM_ReadUInt8(RE4_WEPID) == 0x0A || // a. rifle
@@ -214,7 +247,7 @@ static void GC_RE4_Inject(void)
 		scopeY += (float)(!invertpitch ? ymouse : -ymouse) * looksensitivity * (fov / 45.f) / (scale * 45.f);
 		scopeY = ClampFloat(scopeY, -1.22f, 1.22f);		
 		MEM_WriteFloat(RE4_SCOPEY, scopeY);
-		MEM_WriteFloat(RE4_AIMY2, aimY2);  //aimY 2.0
+		
 	}else if(MEM_ReadUInt8(0x81052D30) == 0x81 || //checking if leon is aiming with harpoon day
 			 MEM_ReadUInt8(0x8105FD3C) == 0x3E){ //checking if leon is aiming with harpoon night
 		float harpoonY = MEM_ReadFloat(MEM_ReadUInt(RE4_HARPOONBASE) + RE4_HARPOONY);
@@ -232,11 +265,11 @@ static void GC_RE4_Inject(void)
 			MEM_WriteFloat(MEM_ReadUInt(0x80218650) + RE4_HARPOONX, harpoonX);
 		else
 			MEM_WriteFloat(MEM_ReadUInt(0x80218650) + RE4_BHARPOONX, bharpoonX);
-	}else{
-		//neither with scope weapon or on boat
-		MEM_WriteFloat(RE4_AIMY2, aimY2);  //aimY 2.0
-		MEM_WriteFloat((aimBaseY + RE4_AIMY), (aimY));
 	}
+
+	//neither with scope weapon or on boat
+	MEM_WriteFloat(RE4_AIMY2, aimY2);  //aimY 2.0
+	MEM_WriteFloat((aimBaseY + RE4_AIMY), (aimY));
 	
 	
 	// MEM_WriteFloat(RE4_CAMX, camX);
