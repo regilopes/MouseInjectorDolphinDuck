@@ -663,6 +663,28 @@ void MEM_WriteInt(const uint32_t addr, int32_t value)
 	WriteProcessMemory(emuhandle, (LPVOID)(emuoffset + (addr - 0x80000000)), &value, sizeof(value), NULL);
 }
 //==========================================================================
+// Purpose: write int8 to memory
+// Parameter: address location and value
+//==========================================================================
+void MEM_WriteInt8(const uint32_t addr, int8_t value)
+{
+	if(!emuoffset || NOTWITHINMEMRANGE(addr)) // if gamecube memory has not been init by dolphin or writing to outside of memory range
+		return;
+	// MEM_ByteSwap32((uint32_t *)&value); // byteswap
+	WriteProcessMemory(emuhandle, (LPVOID)(emuoffset + (addr - 0x80000000)), &value, sizeof(value), NULL);
+}
+//==========================================================================
+// Purpose: write int8 to memory
+// Parameter: address location and value
+//==========================================================================
+void MEM_WriteInt16(const uint32_t addr, int16_t value)
+{
+	if(!emuoffset || NOTWITHINMEMRANGE(addr)) // if gamecube memory has not been init by dolphin or writing to outside of memory range
+		return;
+	// MEM_ByteSwap32((uint32_t *)&value); // byteswap
+	WriteProcessMemory(emuhandle, (LPVOID)(emuoffset + (addr - 0x80000000)), &value, sizeof(value), NULL);
+}
+//==========================================================================
 // Purpose: write unsigned int to memory
 // Parameter: address location and value
 //==========================================================================
