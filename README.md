@@ -57,7 +57,7 @@ avoid clicking off the window.
 | Medal of Honor: Frontline | Fair | <sup>Minecart level is broken</sub> |
 | Medal of Honor: Rising Sun | Poor | <sup>Looking down scope while in turret mode is broken</sub> |
 | Metal Arms | Good | <sup>Rat driving or rat turret may not work correctly<sup> |
-| Resident Evil 4 | Good | <sup> Can't move the external camera movement on gamepad</sub> |
+| Resident Evil 4 | Good | <sup> Can't move the external camera on gamepad</sub> |
 | Serious Sam: Next Encounter | Fair | <sup>Vehicle/submarine interfaces are not supported</sub> |
 | TimeSplitters 2 | Fair | <sup>Camera/sentry modes not supported</sub> |
 | TimeSplitters: Future Perfect | Poor | <sup>All non-first person modes are not supported</sub> |
@@ -164,7 +164,7 @@ avoid clicking off the window.
 | Ninja Assault (USA) | SLUS-20492 | Good | <sup>**Requires supplied cheat file to disable aim-lock**</br>Not fully tested</sub> | - | **785B28DA.pnach** |
 | No One Lives Forever (USA) | SLUS-20028 | Good | <sup>Not fully tested</sub> | <sup>Auto-targeting: Off</sub> | - |
 | Quake III: Revolution (USA) | SLUS-20167 | Good | <sup>None</sub> | <sup>Auto Center: No <br> Auto Aiming: No (only available from main menu options) | - |
-| Resident Evil 4 (USA) | SLUS-21134 | Good | <sup> Can't move the external camera movement on gamepad</sub> |
+| Resident Evil 4 (USA) | SLUS-21134 | Good | <sup> Can't move the external camera on gamepad</sub> |
 | Red Dead Revolver (USA) | SLUS-20500 | Fair | <sup>Gatling guns and final scene may break if game is loaded from memory card after a shutdown.  **Fix below**</sub> | <sup>Target Mode: Toggle</sub> | - |
 | Resident Evil: Dead Aim (USA) | SLUS-20669 | Good | <sup>**Requires supplied cheat file**</br>Third-person camera y-axis not supported</sub> | - | **FBB5290C.pnach** |
 | Return to Castle Wolfenstein: Operation Resurrection (USA) | SLUS-20297 | Good | <sup>Not fully tested</sub> | <sup>Auto Center View: Off</br>Always Aim: Off</sub> | - |
