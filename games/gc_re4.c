@@ -227,7 +227,7 @@ static void GC_RE4_Inject(void)
 	//while aiming
 	float aimX = MEM_ReadFloat(aimBaseX + RE4_AIMX); 
 
-	float aimY = MEM_ReadFloat(aimBaseY + RE4_AIMY); 
+	float aimY = MEM_ReadFloat(aimBaseY + RE4_AIMY);
 	float aimY2 = MEM_ReadFloat(RE4_AIMY2); //aimY 2.0
 
 	//while not aiming
@@ -275,10 +275,6 @@ static void GC_RE4_Inject(void)
 		else
 			MEM_WriteFloat(MEM_ReadUInt(RE4_HARPOONBASE) + RE4_BHARPOONX, bharpoonX);
 	}
-
-	//neither with scope weapon or on boat
-	MEM_WriteFloat(RE4_AIMY2, aimY2);  //aimY 2.0
-	MEM_WriteFloat((aimBaseY + RE4_AIMY), aimY);
 	
 	
 	camX += (float)-xmouse * looksensitivity * (fov / 50.f) / (scale * 30.f);
@@ -292,20 +288,25 @@ static void GC_RE4_Inject(void)
 			camX = 0.f;	//always follow the direction of the lasersight
 
 			//readjusting sensitivity while aiming
-			aimX -= (float)-xmouse * looksensitivity * (fov / 50.f) / (scale * 145.f);
-			camX -= (float)-xmouse * looksensitivity * (fov / 50.f) / (scale * 145.f);
+			camX -= (float)-xmouse * looksensitivity * (fov / 50.f) / (scale * 90.f);
 		}
 
 		if(footwork != 0x00 && footwork != 0x06){//checking if is not standing & not aiming
-			//smoothing rotation to where the camera is directed
-			aimX += camX / 30.f;
-			camX -= camX / 30.f;
+			//smoothing player model rotation to where the camera is pointing
+			aimX += camX / 5.f; //was using 30.0f but when alt+tabing the emulator while playing makes turning sluggish
+			camX -= camX / 5.f;
 		}
 
+	
+
+	//neither with scope weapon or on boat
+	MEM_WriteFloat(RE4_AIMY2, aimY2);  //aimY 2.0
+	MEM_WriteFloat((aimBaseY + RE4_AIMY), aimY);
 		
 	MEM_WriteFloat(RE4_CAMX, camX);
 		
 	MEM_WriteFloat(RE4_CAMY, camY);
 	
-	MEM_WriteFloat(aimBaseX + RE4_AIMX, aimX);
+	if(footwork != 0x04) //fix jerk movement while turning on keyboard/gamepad when not aiming
+		MEM_WriteFloat(aimBaseX + RE4_AIMX, aimX);
 }
