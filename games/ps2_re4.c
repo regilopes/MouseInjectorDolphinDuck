@@ -23,6 +23,10 @@
 #include "../mouse.h"
 #include "game.h"
 
+//TODO:
+//fix being able to rotate leon while on a ladder or cutscene
+//disable knife ready animation
+
 #define PI 3.14159265f // 0x40490FDB
 
 //aimBase pointer
@@ -119,8 +123,8 @@ static void PS2_RE4_Inject(void)
 		PS2_MEM_WriteUInt(0x001AA710, 0x00000000);
 	
 	//disabling camX auto center
-	if (MEM_ReadUInt(0x001AA71C) == 0xE6200288)
-	 	MEM_WriteUInt(0x001AA71C, 0x00000000);
+	if (PS2_MEM_ReadUInt(0x001AA71C) == 0xE6200288)
+	 	PS2_MEM_WriteUInt(0x001AA71C, 0x00000000);
 
 	
 	
@@ -201,9 +205,9 @@ static void PS2_RE4_Inject(void)
 
 	//aimX += (float)-xmouse * looksensitivity * (fov / 50.f) / (scale * 45.f);
 	
-	aimY += (float)(!invertpitch ? -ymouse : ymouse) * looksensitivity * (fov / 50.f) / (scale * 65.f);
+	aimY += (float)(!invertpitch ? -ymouse : ymouse) * looksensitivity * (fov / 50.f) / (scale * 55.f);
 	aimY = ClampFloat(aimY, -1.570796371f, 1.570796371f);
-	aimY2 += (float)(!invertpitch ? -ymouse : ymouse) * looksensitivity * (fov / 50.f) / (scale * 65.f); //aimY 2.0
+	aimY2 += (float)(!invertpitch ? -ymouse : ymouse) * looksensitivity * (fov / 50.f) / (scale * 55.f); //aimY 2.0
 	aimY2 = ClampFloat(aimY2, -1.f, 1.f);
 
 	
@@ -227,13 +231,13 @@ static void PS2_RE4_Inject(void)
 	// 	bharpoonX += (float)-xmouse * looksensitivity * (fov / 50.f) / (scale * 45.f);
 	// 	harpoonY = ClampFloat(harpoonY, -255.f, 255.f);
 	// 	harpoonX = ClampFloat(harpoonX, -0.4f, 0.4f);
-	// 	MEM_WriteFloat(MEM_ReadUInt(0x80218650) + RE4_HARPOONY, harpoonY);
+	// 	MEM_WriteFloat(MEM_ReadUInt(RE4_HARPOONBASE) + RE4_HARPOONY, harpoonY);
 
 		
 	// 	if(-0.38f < harpoonX && harpoonX < 0.38f) //spin the boat only if crosshair is on the edge of screen
-	// 		MEM_WriteFloat(MEM_ReadUInt(0x80218650) + RE4_HARPOONX, harpoonX);
+	// 		MEM_WriteFloat(MEM_ReadUInt(RE4_HARPOONBASE) + RE4_HARPOONX, harpoonX);
 	// 	else
-	// 		MEM_WriteFloat(MEM_ReadUInt(0x80218650) + RE4_BHARPOONX, bharpoonX);
+	// 		MEM_WriteFloat(MEM_ReadUInt(RE4_HARPOONBASE) + RE4_BHARPOONX, bharpoonX);
 	// }
 
 	camX += (float)-xmouse * looksensitivity * (fov / 50.f) / (scale * 30.f);
