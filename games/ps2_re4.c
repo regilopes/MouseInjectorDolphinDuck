@@ -32,18 +32,18 @@
 //aimBase pointer
 #define RE4_AIMBASEX 0x437780
 #define RE4_AIMBASEY 0x437818
-#define RE4_HARPOONBASE 0x
+#define RE4_HARPOONBASE 0x4203B0
 
 //X axis
 #define RE4_AIMX 0xD4 //offset from aimBaseX
-#define RE4_HARPOONX 0x
-#define RE4_BHARPOONX 0x
+#define RE4_HARPOONX 0x638
+#define RE4_BHARPOONX 0x36AC4
 
 //Y axis
 #define RE4_AIMY 0x28
 #define RE4_AIMY2 0x3D7564  //aimY 2.0
 #define RE4_SCOPEY 0x003CA940
-#define RE4_HARPOONY 0x
+#define RE4_HARPOONY 0x624
 
 //IDs
 #define RE4_WEPID 0x0042DA82 //current weapon
@@ -219,26 +219,25 @@ static void PS2_RE4_Inject(void)
 			scopeY += (float)(!invertpitch ? ymouse : -ymouse) * looksensitivity * (fov / 45.f) / (scale * 45.f);
 			scopeY = ClampFloat(scopeY, -1.22f, 1.22f);		
 			PS2_MEM_WriteFloat(RE4_SCOPEY, scopeY);
-		}
 		
-	// }else if(MEM_ReadUInt8(0x81052D30) == 0x81 || //checking if leon is aiming with harpoon day
-	// 		 MEM_ReadUInt8(0x8105FD3C) == 0x3E){ //checking if leon is aiming with harpoon night
-	// 	float harpoonY = MEM_ReadFloat(MEM_ReadUInt(RE4_HARPOONBASE) + RE4_HARPOONY);
-	// 	float harpoonX = MEM_ReadFloat(MEM_ReadUInt(RE4_HARPOONBASE) + RE4_HARPOONX); //moves only crosshair
-	// 	float bharpoonX = MEM_ReadFloat(MEM_ReadUInt(RE4_HARPOONBASE) + RE4_BHARPOONX); //spin the entire boat
-	// 	harpoonY += (float)(!invertpitch ? -ymouse : ymouse) * looksensitivity * (fov / 50.f) / 65;
-	// 	harpoonX += (float)-xmouse * looksensitivity * (fov / 50.f) / (scale * 45.f);
-	// 	bharpoonX += (float)-xmouse * looksensitivity * (fov / 50.f) / (scale * 45.f);
-	// 	harpoonY = ClampFloat(harpoonY, -255.f, 255.f);
-	// 	harpoonX = ClampFloat(harpoonX, -0.4f, 0.4f);
-	// 	MEM_WriteFloat(MEM_ReadUInt(RE4_HARPOONBASE) + RE4_HARPOONY, harpoonY);
+	}else if(PS2_MEM_ReadUInt8(0x015EFBAC) == 0x51 || //checking if leon is aiming with harpoon day
+	 		 PS2_MEM_ReadUInt8(0x0163B3EC) == 0x51){ //checking if leon is aiming with harpoon night
+	 	float harpoonY = PS2_MEM_ReadFloat(PS2_MEM_ReadUInt(RE4_HARPOONBASE) + RE4_HARPOONY);
+	 	float harpoonX = PS2_MEM_ReadFloat(PS2_MEM_ReadUInt(RE4_HARPOONBASE) + RE4_HARPOONX); //moves only crosshair
+	 	float bharpoonX = PS2_MEM_ReadFloat(PS2_MEM_ReadUInt(RE4_HARPOONBASE) + RE4_BHARPOONX); //spin the entire boat
+	 	harpoonY += (float)(!invertpitch ? -ymouse : ymouse) * looksensitivity * (fov / 50.f) / 65;
+	 	harpoonX += (float)-xmouse * looksensitivity * (fov / 50.f) / (scale * 45.f);
+	 	bharpoonX += (float)-xmouse * looksensitivity * (fov / 50.f) / (scale * 45.f);
+	 	harpoonY = ClampFloat(harpoonY, -255.f, 255.f);
+	 	harpoonX = ClampFloat(harpoonX, -0.4f, 0.4f);
+	 	PS2_MEM_WriteFloat(PS2_MEM_ReadUInt(RE4_HARPOONBASE) + RE4_HARPOONY, harpoonY);
 
 		
-	// 	if(-0.38f < harpoonX && harpoonX < 0.38f) //spin the boat only if crosshair is on the edge of screen
-	// 		MEM_WriteFloat(MEM_ReadUInt(RE4_HARPOONBASE) + RE4_HARPOONX, harpoonX);
-	// 	else
-	// 		MEM_WriteFloat(MEM_ReadUInt(RE4_HARPOONBASE) + RE4_BHARPOONX, bharpoonX);
-	// }
+	 	if(-0.38f < harpoonX && harpoonX < 0.38f) //spin the boat only if crosshair is on the edge of screen
+			PS2_MEM_WriteFloat(PS2_MEM_ReadUInt(RE4_HARPOONBASE) + RE4_HARPOONX, harpoonX);
+	 	else
+			PS2_MEM_WriteFloat(PS2_MEM_ReadUInt(RE4_HARPOONBASE) + RE4_BHARPOONX, bharpoonX);
+	}
 
 	camX += (float)-xmouse * looksensitivity * (fov / 50.f) / (scale * 30.f);
 	camX = ClampFloat(camX, -PI, PI);
