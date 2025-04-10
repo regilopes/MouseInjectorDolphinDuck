@@ -84,13 +84,16 @@ extern void SNES_MEM_WriteWord(const uint32_t addr, uint16_t value);
 extern uint32_t PS2_MEM_ReadPointer(const uint32_t addr);
 extern uint32_t PS2_MEM_ReadWord(const uint32_t addr);
 extern uint32_t PS2_MEM_ReadUInt(const uint32_t addr);
+extern int32_t PS2_MEM_ReadInt(const uint32_t addr);
 extern float PS2_MEM_ReadFloat(const uint32_t addr);
-extern uint32_t PS2_MEM_ReadUInt16(const uint32_t addr);
+extern uint16_t PS2_MEM_ReadUInt16(const uint32_t addr);
 extern int16_t PS2_MEM_ReadInt16(const uint32_t addr);
 extern uint8_t PS2_MEM_ReadUInt8(const uint32_t addr);
 extern void PS2_MEM_WriteWord(const uint32_t addr, uint32_t value);
+extern void PS2_MEM_WriteInt(const uint32_t addr, int32_t value);
 extern void PS2_MEM_WriteUInt(const uint32_t addr, uint32_t value);
 extern void PS2_MEM_WriteUInt16(const uint32_t addr, uint16_t value);
+extern void PS2_MEM_WriteUInt8(const uint32_t addr, uint8_t value);
 extern void PS2_MEM_WriteInt16(const uint32_t addr, int16_t value);
 extern void PS2_MEM_WriteFloat(const uint32_t addr, float value);
 
