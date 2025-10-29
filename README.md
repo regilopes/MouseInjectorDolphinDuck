@@ -152,11 +152,13 @@ avoid clicking off the window.
 | Destroy All Humans! 2 (USA) | SLUS-21439 | Good | <sup>**Requires supplied cheat file**</sub> | <sup>Not fully tested</sub> | **42DF8C8C.pnach** |
 | Dirge of Cerberus - Final Fantasy VII (USA) | SLUS-21419 | Good | <sup>**Requires supplied cheat file to disable auto-lookahead**</sub> | <sup>Not fully tested</sub> | **44A5FA15.pnach** |
 | Eternal Ring (USA) | SLUS-20015 | Good | <sup>Not fully tested</sub> | - | - |
+| Grand Theft Auto III (USA) | SLUS-20062 | Great | <sup>3rd person camera can be controlled via gamepad</sub> | - | - |
 | Ghost in the Shell: Stand Alone Complex (USA) | SLUS-21006 | Fair | <sup>Horizontal camera while climbing not clamped</sub> | - | - |
 | Global Defence Force (PAL) / Chikyū Bōeigun 2 (Japan) | SLES-54464, SLPM-62652 | Good | <sup>Vehicle mouse control is experimental</br>Not fully tested</sub> | <sup>Control Type: Technical</sub> | - |
 | Gunslinger Girl Vol. 1 (Japan)| SLPS-25343 | Fair | <sup>Not fully tested</sub> | - | - |
 | Jurassic: The Hunted (USA) | SLUS-21907 | Good | <sup>**Requires supplied cheat file**</br>Optional 60FPS cheat recommended</sub> | <sup>Aim Assist: Off</sub> | **EFE4448F.pnach** |
 | King's Field IV: The Ancient City (USA) | SLUS-20318 | Good | <sup>Not fully tested</sub> | - | - |
+| Max Payne (USA) | SLUS-20230 | Good | <sup>Not fully tested</sub> | - | - |
 | Medal of Honor: Vanguard (USA) | SLUS-21597 | Good | <sup>Multiplayer mode not supported</sub> | - | - |
 | Mercenaries: Playground of Destruction (USA) | SLUS-20932 | Fair | <sup>**Requires cheat file to disable aim-assist**</br> X-axis in normal vehicles not supported</sub> | - | **23510F99.pnach** |
 | Michigan: Report from Hell (Europe) | SLES-53073 | Fair | <sup>Door peek camera not supported</br>Not fully tested</sub> | - | - |
