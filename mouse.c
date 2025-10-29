@@ -22,7 +22,7 @@
 #include "mouse.h"
 #include "./manymouse/manymouse.h"
 
-int32_t xmouse, ymouse; // holds mouse input data (used for gamedrivers)
+int32_t xmouse, ymouse, mouse0, mouse1; // holds mouse input data (used for gamedrivers)
 
 static POINT mouselock; // center screen X and Y var for mouse
 static ManyMouseEvent event; // hold current mouse event
@@ -68,7 +68,9 @@ void MOUSE_Update(const uint16_t tickrate)
 			SetCursorPos(mouselock.x, mouselock.y); // set mouse position back to lock position
 		lockmousecounter++; // overflow pseudo-counter
 	}
-	xmouse = ymouse = 0; // reset mouse input
+	//mainJoy();
+	//JOYSTICK_UPDATE();
+	xmouse = ymouse = mouse0 = mouse1 = 0; // reset mouse input
 	while(ManyMouse_PollEvent(&event))
 	{
 		if(event.type == MANYMOUSE_EVENT_RELMOTION)
@@ -77,6 +79,14 @@ void MOUSE_Update(const uint16_t tickrate)
 				xmouse += event.value;
 			else
 				ymouse += event.value;
+		}
+
+		if(event.type == MANYMOUSE_EVENT_BUTTON)
+		{
+			if(event.item == 1)
+				mouse0 = event.value;
+			if(event.item == 1)
+				mouse1 = event.value;
 		}
 	}
 }

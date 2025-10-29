@@ -24,7 +24,10 @@
 #include "main.h"
 #include "memory.h"
 #include "mouse.h"
+#include "joystick.h"
+//#include "xinputjoy.h"
 #include "./games/game.h"
+//#include "SDL2/SDL.h"
 
 enum EDITINGCURRENT {EDITINGSENSITIVITY = 0, EDITINGCROSSHAIR};
 
@@ -32,12 +35,13 @@ static uint8_t mousetoggle = 0;
 static uint8_t selectedoption = EDITINGSENSITIVITY;
 static uint8_t locksettings = 0;
 static uint8_t welcomed = 0;
+static uint8_t joyupdatecounter = 0; // limit SetCursorPos execution
 
 uint8_t sensitivity = 20;
 uint8_t crosshair = 3;
 uint8_t invertpitch = 0;
 int isHooked = 0;
-uint8_t uncapTickrate = 0;
+//uint8_t uncapTickrate = 0;
 uint8_t optionToggle = 0;
 
 float out = 0;
@@ -79,6 +83,24 @@ int32_t main(void)
 		Sleep(3000);
 		return 0;
 	}
+
+
+
+	// //if (joyupdatecounter % 25 == 0){
+	JOYSTICK_Init();
+		
+	// // }
+	// // joyupdatecounter++;
+	// if(JOYSTICK_check()) // close if joystick not detected
+	// {
+	// 	//printf("\n Mouse Injector for %s %s\n%s\n\n   Mouse not detected.", DOLPHINVERSION, BUILDINFO, LINE);
+	// 	MessageBox(HWND_DESKTOP, "JOYSTICK NOT DETECTED", "Error", MB_ICONERROR | MB_OK); // tell the user saving mouseinjector.ini failed
+	// 	fprintf(stderr, "SDL Error: %s\n", SDL_GetError());
+	// 	MEM_Quit();
+	// 	Sleep(3000);
+	// 	return 0;
+	// }
+	
 	if(!MOUSE_Init()) // close if mouse was not detected
 	{
 		printf("\n Mouse Injector for %s %s\n%s\n\n   Mouse not detected. Closing...", DOLPHINVERSION, BUILDINFO, LINE);
@@ -100,6 +122,9 @@ int32_t main(void)
 		{
 			if(GAME_Status()) // if supported game has been detected
 			{
+				//XINPUT_Update();
+				JOYSTICK_Update(GAME_Tickrate());
+
 				MOUSE_Update(GAME_Tickrate()); // update xmouse and ymouse vars so injection use latest mouse input
 				GAME_Inject(); // inject mouselook to game
 				if (initialHookOccurred == 0) // update GUI on initial hook
@@ -140,6 +165,7 @@ static void quit(void)
 {
 	INI_Save(0);
 	MOUSE_Quit();
+	JOYSTICK_Quit();
 	MEM_Quit();
 }
 //==========================================================================
@@ -195,6 +221,7 @@ static void GUI_Interact(void)
 	{
 		MOUSE_Lock();
 		MOUSE_Update(GAME_Tickrate());
+		JOYSTICK_Update(GAME_Tickrate()); //optional?
 		mousetoggle = !mousetoggle;
 		updateinterface = 1;
 	}
@@ -213,6 +240,7 @@ static void GUI_Interact(void)
 		invertpitch = !invertpitch;
 		updateinterface = 1;
 	}
+	
 	if(K_8 && !locksettings && !updateinterface) // invert pitch toggle (7)
 	{
 		optionToggle = !optionToggle;
