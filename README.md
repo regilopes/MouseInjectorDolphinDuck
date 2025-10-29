@@ -156,7 +156,7 @@ avoid clicking off the window.
 | Ghost in the Shell: Stand Alone Complex (USA) | SLUS-21006 | Fair | <sup>Horizontal camera while climbing not clamped</sub> | - | - |
 | Global Defence Force (PAL) / Chikyū Bōeigun 2 (Japan) | SLES-54464, SLPM-62652 | Good | <sup>Vehicle mouse control is experimental</br>Not fully tested</sub> | <sup>Control Type: Technical</sub> | - |
 | Gunslinger Girl Vol. 1 (Japan)| SLPS-25343 | Fair | <sup>Not fully tested</sub> | - | - |
-| Hitman 2: Silent Assassin (USA)| SLPS-25343 | Good | <sup>Not fully tested</sub> | - | - |
+| Hitman 2: Silent Assassin (USA)| SLUS-20374 | Good | <sup>Not fully tested</sub> | - | - |
 | Jurassic: The Hunted (USA) | SLUS-21907 | Good | <sup>**Requires supplied cheat file**</br>Optional 60FPS cheat recommended</sub> | <sup>Aim Assist: Off</sub> | **EFE4448F.pnach** |
 | King's Field IV: The Ancient City (USA) | SLUS-20318 | Good | <sup>Not fully tested</sub> | - | - |
 | Max Payne (USA) | SLUS-20230 | Good | <sup>Not fully tested</sub> | - | - |
