@@ -27,82 +27,82 @@
 #define PI 3.14159265f
 #define TAU 6.2831853f // 0x40C90FDB
 
-#define GTA3_FPCAMY 0x004E2FAC
-#define GTA3_FPCAMX 0x004E2F98
-#define GTA3_ZOOM 0x004E2FD8
+#define GTAVC_FPCAMX 0x005BB15C
+#define GTAVC_FPCAMY 0x005BB14C
+#define GTAVC_ZOOM 0x005BB154
 
-#define GTA3_FPCAMY2 0x004E3248
-#define GTA3_FPCAMX2 0x004E3234
-#define GTA3_ZOOM2 0x004E3274
+#define GTAVC_FPCAMY2 0x004E3248
+#define GTAVC_FPCAMX2 0x004E3234
+#define GTAVC_ZOOM2 0x004E3274
 
-#define GTA3_CAMY 0x4E2F0C
-#define GTA3_CAMY2 0x4E31A8
-#define GTA3_BODYANGLE 0xB658E0
+#define GTAVC_CAMY 0x005BB0F4
+#define GTAVC_CAMY2 0x4E31A8
+#define GTAVC_BODYANGLE 0xB658E0
 
 
-static uint8_t PS2_GTA3_Status(void);
-static void PS2_GTA3_Inject(void);
+static uint8_t PS2_GTAVC_Status(void);
+static void PS2_GTAVC_Inject(void);
 
 
 static const GAMEDRIVER GAMEDRIVER_INTERFACE =
 {
-	"Grand Theft Auto III",
-	PS2_GTA3_Status,
-	PS2_GTA3_Inject,
+	"Grand Theft Auto Vice City",
+	PS2_GTAVC_Status,
+	PS2_GTAVC_Inject,
 	1,// 1000 Hz tickrate
 	0 // crosshair sway not supported for driver
 };
 
-const GAMEDRIVER *GAME_PS2_GTA3 = &GAMEDRIVER_INTERFACE;
+const GAMEDRIVER *GAME_PS2_GTAVC = &GAMEDRIVER_INTERFACE;
 
 //==========================================================================
 // Purpose: return 1 if game is detected
 //==========================================================================
-static uint8_t PS2_GTA3_Status(void)
+static uint8_t PS2_GTAVC_Status(void)
 {
-	// SLUS_200.62
+	// SLUS_205.52 
 	return (PS2_MEM_ReadWord(0x00093390) == 0x534C5553U && 
-			PS2_MEM_ReadWord(0x00093394) == 0x5F323030U &&
-			PS2_MEM_ReadWord(0x00093398) == 0x2E36323BU);
+			PS2_MEM_ReadWord(0x00093394) == 0x5F323035U &&
+			PS2_MEM_ReadWord(0x00093398) == 0x2E35323BU);
 }
 //==========================================================================
 // Purpose: calculate mouse look and inject into current game
 //==========================================================================
-static void PS2_GTA3_Inject(void)
+static void PS2_GTAVC_Inject(void)
 {
 	if(xmouse == 0 && ymouse == 0 && rx == 0 && ry == 0) // if mouse or RightStick is idle
 	 	return;
 	
 
-	// //disabling camX spring
-	if (PS2_MEM_ReadUInt(0x2632F8) == 0xE6A000D8)
-		PS2_MEM_WriteUInt(0x002632F8, 0x00000000);
+	//disabling camX spring
+	if (PS2_MEM_ReadUInt(0x00258254) == 0xE66000BC)
+		PS2_MEM_WriteUInt(0x00258254, 0x00000000);
 
-	if (PS2_MEM_ReadUInt(0x00262474) == 0xE6A000D8)
-		PS2_MEM_WriteUInt(0x00262474, 0x00000000);
+	if (PS2_MEM_ReadUInt(0x00258A84) == 0xE66000BC)
+		PS2_MEM_WriteUInt(0x00258A84, 0x00000000);
 
 	//CPad::ForceCameraBehindPlayer(void) STUB
-	if (PS2_MEM_ReadUInt(0x0027F900) == 0x9082005D){
-	 	PS2_MEM_WriteUInt(0x0027F900, 0x03E00008);
-	 	PS2_MEM_WriteUInt(0x0027F904, 0x00000000);
+	if (PS2_MEM_ReadUInt(0x0027A370) == 0x9482006E){
+	 	PS2_MEM_WriteUInt(0x0027A370, 0x03E00008);
+	 	PS2_MEM_WriteUInt(0x0027A374, 0x00000000);
 	}
 
 	//disabling camY spring
-	if (PS2_MEM_ReadUInt(0x00247588) == 0xE4800000)
-	  	PS2_MEM_WriteUInt(0x00247588, 0x00000000);
+	if (PS2_MEM_ReadUInt(0x00260714) == 0xE4800000)
+	  	PS2_MEM_WriteUInt(0x00260714, 0x00000000);
 
 	float looksensitivity = (float)sensitivity;
 
-	float fpcamY = PS2_MEM_ReadFloat(GTA3_FPCAMY);
-	float fpcamX = PS2_MEM_ReadFloat(GTA3_FPCAMX);
-	float zoom = PS2_MEM_ReadFloat(GTA3_ZOOM);
+	float fpcamY = PS2_MEM_ReadFloat(GTAVC_FPCAMY);
+	float fpcamX = PS2_MEM_ReadFloat(GTAVC_FPCAMX);
+	float zoom = PS2_MEM_ReadFloat(GTAVC_ZOOM);
 
-	float fpcamY2 = PS2_MEM_ReadFloat(GTA3_FPCAMY2);
-	float fpcamX2 = PS2_MEM_ReadFloat(GTA3_FPCAMX2);
-	float zoom2 = PS2_MEM_ReadFloat(GTA3_ZOOM2);
+	float fpcamY2 = PS2_MEM_ReadFloat(GTAVC_FPCAMY2);
+	float fpcamX2 = PS2_MEM_ReadFloat(GTAVC_FPCAMX2);
+	float zoom2 = PS2_MEM_ReadFloat(GTAVC_ZOOM2);
 
-	float camY = PS2_MEM_ReadFloat(GTA3_CAMY);
-	float bodyAngle = PS2_MEM_ReadFloat(GTA3_BODYANGLE);
+	float camY = PS2_MEM_ReadFloat(GTAVC_CAMY);
+	float bodyAngle = PS2_MEM_ReadFloat(GTAVC_BODYANGLE);
 
 	
 
@@ -133,14 +133,14 @@ static void PS2_GTA3_Inject(void)
 		
 	
 
-	PS2_MEM_WriteFloat(GTA3_FPCAMY, fpcamY);
-	PS2_MEM_WriteFloat(GTA3_FPCAMX, fpcamX);
+	PS2_MEM_WriteFloat(GTAVC_FPCAMY, fpcamY);
+	PS2_MEM_WriteFloat(GTAVC_FPCAMX, fpcamX);
 
 	
-	PS2_MEM_WriteFloat(GTA3_FPCAMY2, fpcamY2);
-	PS2_MEM_WriteFloat(GTA3_FPCAMX2, fpcamX2);
+	//PS2_MEM_WriteFloat(GTAVC_FPCAMY2, fpcamY2);
+	//PS2_MEM_WriteFloat(GTAVC_FPCAMX2, fpcamX2);
 
-	PS2_MEM_WriteFloat(GTA3_CAMY, camY);
-	PS2_MEM_WriteFloat(GTA3_CAMY2, camY);
+	PS2_MEM_WriteFloat(GTAVC_CAMY, camY);
+	//PS2_MEM_WriteFloat(GTAVC_CAMY2, camY);
 
 }
