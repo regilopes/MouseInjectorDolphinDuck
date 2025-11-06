@@ -153,6 +153,9 @@ avoid clicking off the window.
 | Dirge of Cerberus - Final Fantasy VII (USA) | SLUS-21419 | Good | <sup>**Requires supplied cheat file to disable auto-lookahead**</sub> | <sup>Not fully tested</sub> | **44A5FA15.pnach** |
 | Eternal Ring (USA) | SLUS-20015 | Good | <sup>Not fully tested</sub> | - | - |
 | Grand Theft Auto III (USA) | SLUS-20062 | Great | <sup>3rd person camera can be controlled via gamepad</sub> | - | - |
+| Grand Theft Auto Vice City (USA) | SLUS-20552 | Great | <sup>3rd person camera can be controlled via gamepad. Version 3.0</sub> | - | - |
+| Grand Theft Auto San Andreas (USA) | SLUS-20946 | Great | <sup>Not fully tested. Version 1.03</sub> | - | - |
+| Grand Theft Auto Liberty City Stories (USA) | SLUS-21423 | Great | <sup>Not fully tested</sub> | - | - |
 | Ghost in the Shell: Stand Alone Complex (USA) | SLUS-21006 | Fair | <sup>Horizontal camera while climbing not clamped</sub> | - | - |
 | Global Defence Force (PAL) / Chikyū Bōeigun 2 (Japan) | SLES-54464, SLPM-62652 | Good | <sup>Vehicle mouse control is experimental</br>Not fully tested</sub> | <sup>Control Type: Technical</sub> | - |
 | Gunslinger Girl Vol. 1 (Japan)| SLPS-25343 | Fair | <sup>Not fully tested</sub> | - | - |
