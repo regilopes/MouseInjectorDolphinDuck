@@ -91,6 +91,11 @@ static void PS2_GTA3_Inject(void)
 	if (PS2_MEM_ReadUInt(0x00247588) == 0xE4800000)
 	  	PS2_MEM_WriteUInt(0x00247588, 0x00000000);
 
+	//fixing cam wall colision twitching
+	if (PS2_MEM_ReadUInt(0x00262830) == 0xE6A000D8)
+	PS2_MEM_WriteUInt(0x00262830, 0x00000000);
+
+
 	float looksensitivity = (float)sensitivity;
 
 	float fpcamY = PS2_MEM_ReadFloat(GTA3_FPCAMY);
