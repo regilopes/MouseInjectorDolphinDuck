@@ -2,7 +2,7 @@
 
 An external app that injects cursor input into game memory.
 
-### *If you have a game request, please go to the 'Discussions' tab and post it!*
+### *If you have a game request, please go to the ['Discussions'](https://github.com/regilopes/MouseInjectorDolphinDuck/discussions) tab and post it!* 
 ### _Scroll to bottom for_ <font color="red"> *FREQUENTLY ASKED QUESTIONS* </font>
 
 
