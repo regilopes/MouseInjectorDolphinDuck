@@ -21,6 +21,7 @@
 #include "../main.h"
 #include "../memory.h"
 #include "../mouse.h"
+#include "../joystick.h"
 #include "game.h"
 
 #define PI 3.14159265f // 0x40490FDB
@@ -35,12 +36,17 @@
 #define H2_PAUSESTATE 0x005108C8 // paused or not
 #define H2_CUTSCENESTATE 0x005080F0 // in cutscene or not 
 #define H2_SCOPESTATE 0x124 //looking into binocular/scope or not (playerBase offset)
+#define H2_LEANSTATE 0x1545 //side leaning (globalBase offset)
+
 
 
 // cam offsets from playerBase
-#define H2_CAMY 0xD54    //third person
-#define H2_FPY 0x13E4    //first person
-#define H2_SCOPEY 0x1580 //scope/binoculars
+#define H2_CAMY 0xD54     //third person
+#define H2_FPY 0x13E4     //first person
+#define H2_SCOPEY 0x1580  //scope/binoculars
+#define H2_LADDERY 0xB10  //while climbing ladder
+#define H2_LADDERX 0xB0C  //while climbing ladder
+
 
 // cam offsets from camBaseX
 #define H2_CAMXSIN 0x0
@@ -69,6 +75,7 @@ const GAMEDRIVER *GAME_PS2_HITMAN2 = &GAMEDRIVER_INTERFACE;
 static uint32_t globalBase = 0;
 static uint32_t camBaseX = 0;
 static uint32_t playerBase = 0;
+static uint8_t leanState = 0;
 
 
 //==========================================================================
@@ -76,11 +83,23 @@ static uint32_t playerBase = 0;
 //==========================================================================
 static uint8_t PS2_H2_Status(void)
 {
-	// STARTUP.ELF; (0x93390)
+	// SLUS_203.74; (0x93390)
+	// STARTUP.ELF; 
+	// SCE_DD\SCE_D
+
 	// 53 54 41 52 | 54 55 50 2E | 45 4C 46 3B
-	return (PS2_MEM_ReadWord(0x93390) == 0x53544152&&
+	return ((PS2_MEM_ReadWord(0x93390) == 0x53544152&&
 			PS2_MEM_ReadWord(0x93394) == 0x5455502E&&
-			PS2_MEM_ReadWord(0x93398) == 0x454C463B);
+			PS2_MEM_ReadWord(0x93398) == 0x454C463B)||
+			
+			(PS2_MEM_ReadWord(0x93390) == 0x5343455F&&
+			PS2_MEM_ReadWord(0x93394) == 0x44445C53&&
+			PS2_MEM_ReadWord(0x93398) == 0x43455F44)||
+			
+			(PS2_MEM_ReadWord(0x93390) == 0x534C5553&&
+			PS2_MEM_ReadWord(0x93394) == 0x5F323033&&
+			PS2_MEM_ReadWord(0x93398) == 0x2E37343B));		  
+			  
 }
 
 //==========================================================================
@@ -88,8 +107,7 @@ static uint8_t PS2_H2_Status(void)
 //==========================================================================
 static void PS2_H2_Inject(void)
 {
-	// if(xmouse == 0 && ymouse == 0) // if mouse is idle
-	//    	return;
+	
 
 	if(PS2_MEM_ReadUInt8(H2_PAUSESTATE) == 0x01) //paused or inventory
 		return;
@@ -101,6 +119,11 @@ static void PS2_H2_Inject(void)
 	if(PS2_MEM_ReadUInt8(0x508090) == 0x02)
 		PS2_MEM_WriteUInt8(0x508090, 0x01);
 
+	//DISABLE AIM ASSIST
+	if(PS2_MEM_ReadUInt(0x00144E98) == 0x45000002)
+		PS2_MEM_WriteUInt(0x00144E98, 0x00000000);
+		
+
 	
 	globalBase = PS2_MEM_ReadPointer(H2_GLOBALBASE);
 
@@ -109,6 +132,8 @@ static void PS2_H2_Inject(void)
 	playerBase = PS2_MEM_ReadPointer(playerBase + 0x654);
 
 	camBaseX = PS2_MEM_ReadPointer(H2_CAMBASEX);
+
+	leanState = PS2_MEM_ReadUInt8(globalBase + H2_LEANSTATE);
 	
 
 	float zoom = PS2_MEM_ReadFloat(globalBase + H2_ZOOM);
@@ -120,6 +145,9 @@ static void PS2_H2_Inject(void)
 	float scopeY = PS2_MEM_ReadFloat(playerBase + H2_SCOPEY);
 
 	float fpY = PS2_MEM_ReadFloat(playerBase + H2_FPY);
+
+	float ladderY = PS2_MEM_ReadFloat(playerBase + H2_LADDERY);
+	float ladderX = PS2_MEM_ReadFloat(playerBase + H2_LADDERX);
 
 
 	float camXsin = PS2_MEM_ReadFloat(camBaseX + H2_CAMXSIN);
@@ -146,22 +174,36 @@ static void PS2_H2_Inject(void)
 
 	angle += (float)xmouse * looksensitivity * zoom / 15000.f;
 
+	ladderX -= (float)xmouse * looksensitivity * zoom / 15000.f;
+	ladderY = camY;
+	
 	camXsin = sin(angle);
 	camXcos = cos(angle);
 
-	if(PS2_MEM_ReadUInt8(playerBase + H2_SCOPESTATE) == 0x0)
-		PS2_MEM_WriteFloat(globalBase + H2_ZOOM, 1.17f);
-
+	if(leanState == 0x20 || leanState == 0x40){ //leaning to left or right
+		if(xmouse == 0 && ymouse == 0) // if mouse is idle
+	   		return;
+		ladderY = ClampFloat(ladderY, -0.785f, 0.785f);
+		//camY = ClampFloat(camY, -0.785f, 0.785f);
+	}else{
+		PS2_MEM_WriteFloat(camBaseX + H2_CAMXSIN, camXsin);
+		PS2_MEM_WriteFloat(camBaseX + H2_CAMXCOS, camXcos);
+		PS2_MEM_WriteFloat(camBaseX + H2_CAMXSINB, -camXsin);
+		PS2_MEM_WriteFloat(camBaseX + H2_CAMXCOSB, camXcos);
+	}
+	
 	PS2_MEM_WriteFloat(playerBase + H2_CAMY, camY);
 	
+	if(PS2_MEM_ReadUInt8(playerBase + H2_SCOPESTATE) == 0x0)
+	PS2_MEM_WriteFloat(globalBase + H2_ZOOM, 1.17f);
+	
+	
 	PS2_MEM_WriteFloat(playerBase + H2_SCOPEY, scopeY);
-
+	
 	PS2_MEM_WriteFloat(playerBase + H2_FPY, fpY);
 
-	PS2_MEM_WriteFloat(camBaseX + H2_CAMXSIN, camXsin);
-	PS2_MEM_WriteFloat(camBaseX + H2_CAMXCOS, camXcos);
+	
+	PS2_MEM_WriteFloat(playerBase + H2_LADDERY, ladderY);
+	PS2_MEM_WriteFloat(playerBase + H2_LADDERX, ladderX);
 
-	//fixing body rotation animation
-	PS2_MEM_WriteFloat(camBaseX + H2_CAMXSINB, -camXsin);
-	PS2_MEM_WriteFloat(camBaseX + H2_CAMXCOSB, camXcos);
 }
