@@ -57,6 +57,7 @@ avoid clicking off the window.
 | Medal of Honor: Frontline | Fair | <sup>Minecart level is broken</sub> |
 | Medal of Honor: Rising Sun | Poor | <sup>Looking down scope while in turret mode is broken</sub> |
 | Metal Arms | Good | <sup>Rat driving or rat turret may not work correctly<sup> |
+| Metroid Prime | Great | <sup>Revision 0 only.</sub> |
 | Resident Evil 4 | Good | <sup> Can't move the external camera on gamepad</sub> |
 | Serious Sam: Next Encounter | Fair | <sup>Vehicle/submarine interfaces are not supported</sub> |
 | TimeSplitters 2 | Fair | <sup>Camera/sentry modes not supported</sub> |
