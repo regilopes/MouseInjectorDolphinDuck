@@ -70,22 +70,22 @@ static uint8_t PS2_LCS_Status(void)
 static void PS2_LCS_Inject(void)
 {
 	if(xmouse == 0 && ymouse == 0 && // if mouse idle
-	PS2_MEM_ReadInt(0x3D9898) != 0)  //or inside vehicle
+	PS2_MEM_ReadUInt(0x3D9898) != 0){  //or inside vehicle
 		return;
-
-
+	}else{
 	//Wall/floor collision stutter fix
-	if (PS2_MEM_ReadUInt(0x002995EC) == 0x45000011)
-		  PS2_MEM_WriteUInt(0x002995EC, 0x00000000);
-
-
+	//if (PS2_MEM_ReadUInt(0x00299634) == 0xDFB000D0)
+	
 	//disabling ped camY spring
 	if (PS2_MEM_ReadUInt(0x00283184) == 0xE64000E0)
-	  	PS2_MEM_WriteUInt(0x00283184, 0x00000000);
+	PS2_MEM_WriteUInt(0x00283184, 0x00000000);
+	}
 
-	// //disabling car camY spring
-	// if (PS2_MEM_ReadUInt(0x002855AC) == 0xE64000E0)
-	// PS2_MEM_WriteUInt(0x002855AC, 0x00000000);
+
+
+// //disabling car camY spring
+// 	if (PS2_MEM_ReadUInt(0x002855AC) == 0xE64000E0)
+// 	PS2_MEM_WriteUInt(0x002855AC, 0x00000000);
 
 
 	float looksensitivity = (float)sensitivity / 20.f;
@@ -132,6 +132,7 @@ static void PS2_LCS_Inject(void)
 	PS2_MEM_WriteFloat(LCS_CAMXCOS, camXCos);
 	PS2_MEM_WriteFloat(LCS_CAMY, camY);
 	PS2_MEM_WriteFloat(LCS_CAMY2, camY);
+	
 	PS2_MEM_WriteFloat(LCS_AIMY, aimY);
 	PS2_MEM_WriteFloat(LCS_AIMX, aimX);
 

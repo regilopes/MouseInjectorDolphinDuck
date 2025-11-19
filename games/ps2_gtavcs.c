@@ -21,6 +21,7 @@
 #include "../main.h"
 #include "../memory.h"
 #include "../mouse.h"
+#include "../joystick.h"
 #include "game.h"
 
 #define TAU 6.2831853f // 0x40C90FDB
@@ -29,6 +30,11 @@
 #define VCS_CAMXCOS 0x6F4764
 #define VCS_CAMY 0x6F4768
 #define VCS_CAMY2 0x6F4778
+
+#define VCS_AIMY 0x6F45B8
+#define VCS_AIMX 0x6F45BC
+
+#define VCS_ZOOM 0x6F4674
 
 #define VCS_CAMXSIN_MID 0x6F46E0
 #define VCS_CAMXCOS_MID 0x6F46E4
@@ -46,7 +52,7 @@ static const GAMEDRIVER GAMEDRIVER_INTERFACE =
 	0 // crosshair sway not supported for driver
 };
 
-const GAMEDRIVER *GAME_PS2_GTAVICECITYSTORIES = &GAMEDRIVER_INTERFACE;
+const GAMEDRIVER *GAME_PS2_GTAVCS = &GAMEDRIVER_INTERFACE;
 
 //==========================================================================
 // Purpose: return 1 if game is detected
@@ -66,8 +72,20 @@ static void PS2_VCS_Inject(void)
 	if(xmouse == 0 && ymouse == 0) // if mouse is idle
 		return;
 
+	//disabling ped camY spring
+	if (PS2_MEM_ReadUInt(0x0029EEB0) == 0xE6400078){
+	PS2_MEM_WriteUInt(0x0029EEB0, 0x00000000);
+	}
+
+		
+
 	float looksensitivity = (float)sensitivity / 20.f;
 	float scale = 400.f;
+
+	float aimY = (PS2_MEM_ReadFloat(VCS_AIMY));
+	float aimX = (PS2_MEM_ReadFloat(VCS_AIMX));
+
+	float zoom = (PS2_MEM_ReadFloat(VCS_ZOOM));
 
 	float camYMid = PS2_MEM_ReadFloat(VCS_CAMY_MID);
 	float camXSinMid = PS2_MEM_ReadFloat(VCS_CAMXSIN_MID);
@@ -91,9 +109,21 @@ static void PS2_VCS_Inject(void)
 	camXSin = (sin(angle) * 10.f) + camXSinMid;
 	camXCos = (cos(angle) * 10.f) + camXCosMid;
 
+
+	aimY -= (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale * zoom / 70.f + ry/3276800.f * zoom / 100.f; //+ ry/3276800.f * zoom / 70.f
+	
+	//if(ry == 0)
+	//	aimY -= aimY / 30.f;
+
+	aimX -= (float)xmouse * looksensitivity / scale * zoom / 70.f;
+	aimY = ClampFloat(aimY, -1.483153, 0.785006); 
+
+
 	PS2_MEM_WriteFloat(VCS_CAMXSIN, camXSin);
 	PS2_MEM_WriteFloat(VCS_CAMXCOS, camXCos);
 	PS2_MEM_WriteFloat(VCS_CAMY, camY);
 	PS2_MEM_WriteFloat(VCS_CAMY2, camY);
 
+	PS2_MEM_WriteFloat(VCS_AIMY, aimY);
+	PS2_MEM_WriteFloat(VCS_AIMX, aimX);
 }
