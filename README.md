@@ -34,7 +34,7 @@ An external app that injects cursor input into game memory.
 ## How to Use
 1. Start emulator first
 2. Start MouseInjector, read initial information then press ctrl+1
-3. Make sure game is running and press '4' to hook into the process
+3. As soon the game gets loaded (studio logos or intros) press '4' to hook into the process
     1. If game is supported then the mouse will be captured at the position it was at when hooked
         * You will be <b><u>unable</u></b> to use the mouse elsewhere while it is hooked, press 4 to unhook
         * Some games depend on post startup values/addresses so hook may not happen immediately
