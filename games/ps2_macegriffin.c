@@ -35,6 +35,18 @@
 #define MGBH_CAMXCOS2 0x0
 #define MGBH_CAMXSIN_NEG 0x8
 
+#define MGBH_SHIPXSIN 0xDE07A0
+#define MGBH_SHIPXCOS 0xDE07A8
+#define MGBH_SHIPXNSIN 0xDE0788
+#define MGBH_SHIPXCOS2 0xDE0780
+
+#define MGBH_SHIPYSIN 0xDE07A4
+#define MGBH_SHIPYCOS 0xDE07A8
+#define MGBH_SHIPYNSIN 0xDE0798
+#define MGBH_SHIPYCOS2 0xDE0794
+
+#define MGBH_SHIPFLAG 0x52BE08
+
 // #define MGBH_CAMY 0xD79414
 // #define MGBH_CAMXSIN 0x602090
 // #define MGBH_CAMXCOS 0x602098
@@ -79,7 +91,7 @@ static void PS2_MGBH_Inject(void)
 		return;
 
 	float looksensitivity = (float)sensitivity / 20.f;
-	float scale = 600.f;
+	float scale = 800.f;
 
 	camYBase = PS2_MEM_ReadUInt(MGBH_CAMY_BASE);
 	camXBase = PS2_MEM_ReadUInt(camYBase + MGBH_CAMX_BASE);
@@ -100,10 +112,69 @@ static void PS2_MGBH_Inject(void)
 	camXSin = sin(angle);
 	camXCos = cos(angle);
 
-	PS2_MEM_WriteFloat(camXBase + MGBH_CAMXSIN, camXSin);
-	PS2_MEM_WriteFloat(camXBase + MGBH_CAMXCOS, camXCos);
-	PS2_MEM_WriteFloat(camXBase + MGBH_CAMXCOS2, camXCos);
-	PS2_MEM_WriteFloat(camXBase + MGBH_CAMXSIN_NEG, -camXSin);
-	PS2_MEM_WriteFloat(camYBase + MGBH_CAMY, camY);
+	// float shipY = PS2_MEM_ReadFloat(MGBH_SHIPY);
+	// float shipX = PS2_MEM_ReadFloat(MGBH_SHIPX);
+
+	// shipY -= (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale;
+	// shipX -= (float)xmouse * looksensitivity / scale;
+
+
+	// if (shipXcos < 0)
+	// 	shipAngle += TAU / 2;
+
+	//for ship X axis
+
+	float shipXSin = PS2_MEM_ReadFloat(MGBH_SHIPXSIN);
+	float shipXCos = PS2_MEM_ReadFloat(MGBH_SHIPXCOS);
+
+	float shipAngle = atan(shipXSin / shipXCos);
+	if (shipXCos < 0)
+		shipAngle += TAU / 2;
+
+	shipAngle += (float)xmouse * looksensitivity / scale;
+	
+	shipXSin = sin(shipAngle);
+	shipXCos = cos(shipAngle);
+
+
+	//for ship Y axis
+
+	float shipYSin = PS2_MEM_ReadFloat(MGBH_SHIPYSIN);
+	float shipYCos = PS2_MEM_ReadFloat(MGBH_SHIPYCOS);
+	float shipYAngle = atan(shipYSin / shipYCos);
+	if (shipYCos < 0)
+		shipYAngle += TAU / 2;
+	shipYAngle -= (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale;
+	shipYSin = sin(shipYAngle);
+	shipYCos = cos(shipYAngle);
+
+	
+
+
+
+
+	if (PS2_MEM_ReadUInt8(MGBH_SHIPFLAG))
+	{
+		PS2_MEM_WriteFloat(MGBH_SHIPXSIN, shipXSin);
+		PS2_MEM_WriteFloat(MGBH_SHIPXCOS, shipXCos);
+		PS2_MEM_WriteFloat(MGBH_SHIPXCOS2, shipXCos);
+		PS2_MEM_WriteFloat(MGBH_SHIPXNSIN, -shipXSin);
+
+		PS2_MEM_WriteFloat(MGBH_SHIPYSIN, shipYSin);
+		PS2_MEM_WriteFloat(MGBH_SHIPYCOS, shipYCos);
+		PS2_MEM_WriteFloat(MGBH_SHIPYCOS2, shipYCos);
+		PS2_MEM_WriteFloat(MGBH_SHIPYNSIN, -shipYSin);
+
+		// PS2_MEM_WriteFloat(MGBH_SHIPY, shipY);
+		// PS2_MEM_WriteFloat(MGBH_SHIPX, shipX);
+	}else{
+		PS2_MEM_WriteFloat(camXBase + MGBH_CAMXSIN, camXSin);
+		PS2_MEM_WriteFloat(camXBase + MGBH_CAMXCOS, camXCos);
+		PS2_MEM_WriteFloat(camXBase + MGBH_CAMXCOS2, camXCos);
+		PS2_MEM_WriteFloat(camXBase + MGBH_CAMXSIN_NEG, -camXSin);
+		PS2_MEM_WriteFloat(camYBase + MGBH_CAMY, camY);
+	}
+	
+
 
 }
