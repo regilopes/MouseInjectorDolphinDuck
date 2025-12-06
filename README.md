@@ -226,6 +226,28 @@ avoid clicking off the window.
 ### Q: Will this work with netplay/online?
   - Most likely **NO**, single-player only.
 
+Some games on PCSX2 requires that you update you patches.zip file like described below. You must replace patches.zip everytime you update PCSX2 version, as it gets overwritten by the update.
+
+To apply the fix you should place the 'patches.zip' **(DO NOT EXTRACT)** file inside the 'resources' folder of your PCSX2 instalation folder. Then you need enable them into corresponding GTA's game properties on Patches.
+
+
+<img width="600" height="400" alt="image" src="https://github.com/user-attachments/assets/b430eb04-dcad-452b-a27a-d48e1bf4891a" />
+
+ Gamepad inputs now supported via SDL2 library to restore or enhance some gamepad controls when using the injector. Works only on version v1.4 or higher (GTA III releases or newer).  If you're having trouble with Right Stick camera control being too fast or too slow try the instructions described below. 
+
+The use of included PCSX2 input profiles are recommended.
+
+#### INSTRUCTIONS:
+
+- First you must open the mouse injector executable via Windows Terminal, (it's done by default on Win 11 I guess).
+
+- Open Windows Terminal settings by righ clicking on the window title bar
+<img width="533" height="271" alt="image" src="https://github.com/user-attachments/assets/deb997b0-51a9-406f-bff1-a5d6b1304506" />
+
+- On `Appearance` you must enable `Always On Top` and `Hide Terminal in the notification area when it is minimized`. You can enable `Automatically hide window` too if you like, but it is not mandatory to the fix.
+
+Windows for some reason throttle the application whe minimized making right stick speed inconsitent. 
+
 # ManyMouse
 
 ManyMouse is Copyright (c) 2005-2012 Ryan C. Gordon and others. https://icculus.org/manymouse/
