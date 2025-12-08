@@ -35,17 +35,15 @@
 #define MGBH_CAMXCOS2 0x0
 #define MGBH_CAMXSIN_NEG 0x8
 
-#define MGBH_SHIPXSIN 0xDE07A0
-#define MGBH_SHIPXCOS 0xDE07A8
-#define MGBH_SHIPXNSIN 0xDE0788
-#define MGBH_SHIPXCOS2 0xDE0780
 
-#define MGBH_SHIPYSIN 0xDE07A4
-#define MGBH_SHIPYCOS 0xDE07A8
-#define MGBH_SHIPYNSIN 0xDE0798
-#define MGBH_SHIPYCOS2 0xDE0794
+#define MGBH_SHIPCTRLBASE 0x0060B61C
+
+#define MGBH_SHIPCTRLY 0x918
+#define MGBH_SHIPCTRLX 0x91C
 
 #define MGBH_SHIPFLAG 0x52BE08
+
+
 
 // #define MGBH_CAMY 0xD79414
 // #define MGBH_CAMXSIN 0x602090
@@ -69,6 +67,7 @@ const GAMEDRIVER *GAME_PS2_MACEGRIFFIN = &GAMEDRIVER_INTERFACE;
 
 static uint32_t camYBase = 0;
 static uint32_t camXBase = 0;
+static uint32_t shipBase = 0;
 
 //==========================================================================
 // Purpose: return 1 if game is detected
@@ -112,61 +111,27 @@ static void PS2_MGBH_Inject(void)
 	camXSin = sin(angle);
 	camXCos = cos(angle);
 
-	// float shipY = PS2_MEM_ReadFloat(MGBH_SHIPY);
-	// float shipX = PS2_MEM_ReadFloat(MGBH_SHIPX);
-
-	// shipY -= (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale;
-	// shipX -= (float)xmouse * looksensitivity / scale;
 
 
-	// if (shipXcos < 0)
-	// 	shipAngle += TAU / 2;
+	shipBase = PS2_MEM_ReadPointer(MGBH_SHIPCTRLBASE);
 
-	//for ship X axis
+	float rstickY = PS2_MEM_ReadFloat(shipBase + MGBH_SHIPCTRLY);
+	float rstickX = PS2_MEM_ReadFloat(shipBase + MGBH_SHIPCTRLX);
 
-	float shipXSin = PS2_MEM_ReadFloat(MGBH_SHIPXSIN);
-	float shipXCos = PS2_MEM_ReadFloat(MGBH_SHIPXCOS);
+	rstickY += (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale;
+	rstickX += (float)xmouse * looksensitivity / scale;
 
-	float shipAngle = atan(shipXSin / shipXCos);
-	if (shipXCos < 0)
-		shipAngle += TAU / 2;
+	ClampFloat(rstickY, -1.f, 1.f);
+	ClampFloat(rstickX, -1.f, 1.f);
 
-	shipAngle += (float)xmouse * looksensitivity / scale;
-	
-	shipXSin = sin(shipAngle);
-	shipXCos = cos(shipAngle);
-
-
-	//for ship Y axis
-
-	float shipYSin = PS2_MEM_ReadFloat(MGBH_SHIPYSIN);
-	float shipYCos = PS2_MEM_ReadFloat(MGBH_SHIPYCOS);
-	float shipYAngle = atan(shipYSin / shipYCos);
-	if (shipYCos < 0)
-		shipYAngle += TAU / 2;
-	shipYAngle -= (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale;
-	shipYSin = sin(shipYAngle);
-	shipYCos = cos(shipYAngle);
 
 	
+	
+	if (PS2_MEM_ReadUInt8(MGBH_SHIPFLAG)){
+	
+		PS2_MEM_WriteFloat(shipBase + MGBH_SHIPCTRLY, rstickY);
+		PS2_MEM_WriteFloat(shipBase + MGBH_SHIPCTRLX, rstickX);
 
-
-
-
-	if (PS2_MEM_ReadUInt8(MGBH_SHIPFLAG))
-	{
-		PS2_MEM_WriteFloat(MGBH_SHIPXSIN, shipXSin);
-		PS2_MEM_WriteFloat(MGBH_SHIPXCOS, shipXCos);
-		PS2_MEM_WriteFloat(MGBH_SHIPXCOS2, shipXCos);
-		PS2_MEM_WriteFloat(MGBH_SHIPXNSIN, -shipXSin);
-
-		PS2_MEM_WriteFloat(MGBH_SHIPYSIN, shipYSin);
-		PS2_MEM_WriteFloat(MGBH_SHIPYCOS, shipYCos);
-		PS2_MEM_WriteFloat(MGBH_SHIPYCOS2, shipYCos);
-		PS2_MEM_WriteFloat(MGBH_SHIPYNSIN, -shipYSin);
-
-		// PS2_MEM_WriteFloat(MGBH_SHIPY, shipY);
-		// PS2_MEM_WriteFloat(MGBH_SHIPX, shipX);
 	}else{
 		PS2_MEM_WriteFloat(camXBase + MGBH_CAMXSIN, camXSin);
 		PS2_MEM_WriteFloat(camXBase + MGBH_CAMXCOS, camXCos);
@@ -174,7 +139,4 @@ static void PS2_MGBH_Inject(void)
 		PS2_MEM_WriteFloat(camXBase + MGBH_CAMXSIN_NEG, -camXSin);
 		PS2_MEM_WriteFloat(camYBase + MGBH_CAMY, camY);
 	}
-	
-
-
 }
