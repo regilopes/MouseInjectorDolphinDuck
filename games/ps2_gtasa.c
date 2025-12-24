@@ -29,6 +29,9 @@
 #define SA_PED_POINTER 0x7095d0
 #define SA_PLAYER_POINTER 0x14
 
+#define SA_AIMING_STATE 0x560 //offset from ped pointer
+#define SA_BODYANGLE 0x598 //offset from ped pointer
+
 #define SA_CAMXSIN 0x6FE87C
 #define SA_CAMXCOS 0x6FE880
 #define SA_CAMY 0x6FE884
@@ -57,6 +60,8 @@ static const GAMEDRIVER GAMEDRIVER_INTERFACE =
 
 const GAMEDRIVER *GAME_PS2_GTASA = &GAMEDRIVER_INTERFACE;
 static uint32_t ped_p = 0;
+static uint32_t aim_state = 0;
+static uint32_t aimlock_state = 0;
 
 //==========================================================================
 // Purpose: return 1 if game is detected
@@ -74,15 +79,21 @@ static uint8_t PS2_SA_Status(void)
 static void PS2_SA_Inject(void)
 {
 	ped_p = PS2_MEM_ReadPointer(SA_PED_POINTER);
+	aim_state = PS2_MEM_ReadUInt8(ped_p + SA_AIMING_STATE);
+	aimlock_state = PS2_MEM_ReadUInt8(0x688254);
 
 
-	if(xmouse == 0 && ymouse == 0 && rx == 0 && ry == 0) // if mouse and joy idle
+	if(xmouse == 0 && ymouse == 0 && rx == 0 && ry == 0) // if mouse and gamepad idle
 		return;
 
 
 	//disabling ped camY spring
 	if (PS2_MEM_ReadUInt(0x002095F0) == 0xE60100AC)
 	  	PS2_MEM_WriteUInt(0x002095F0, 0x00000000);
+
+	//disabling ped camX wobble
+	if (PS2_MEM_ReadUInt(0x00209524) == 0xE60100BC)
+		PS2_MEM_WriteUInt(0x00209524, 0x00000000);
 
 
 	float looksensitivity = (float)sensitivity / 20.f;
@@ -93,11 +104,15 @@ static void PS2_SA_Inject(void)
 
 	float zoom = (PS2_MEM_ReadFloat(SA_ZOOM));
 
+	float bodyAngle = PS2_MEM_ReadFloat(ped_p + SA_BODYANGLE);
+
 	float camYMid = PS2_MEM_ReadFloat(SA_CAMY_MID);
 	float camXSinMid = PS2_MEM_ReadFloat(SA_CAMXSIN_MID);
 	float camXCosMid = PS2_MEM_ReadFloat(SA_CAMXCOS_MID);
 	
 	float camY = (PS2_MEM_ReadFloat(SA_CAMY) - camYMid) / 10.f;
+
+
 	camY += (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale;
 	// camY = ClampFloat(camY, -0.707106, 0.422618);
 	camY = (camY * 10.f) + camYMid;
@@ -110,30 +125,44 @@ static void PS2_SA_Inject(void)
 	if (camXCos < 0)
 	angle += TAU / 2;
 	
-	angle += (float)xmouse * looksensitivity / scale; //+ ry/3276800.f * zoom / 70.f;
+	angle += (float)xmouse * looksensitivity / scale / 2.f;
 	
 	camXSin = (sin(angle) * 10.f) + camXSinMid;
 	camXCos = (cos(angle) * 10.f) + camXCosMid;
 
-
 	
-	aimY -= (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale * zoom / 70.f + ry/3276800.f * zoom / 100.f; // + ry/3276800.f * zoom / 70.f
-	aimY = ClampFloat(aimY, -1.483039, 0.785006); 
+	aimY -= (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale * zoom / 140.f + ry/3276805.f * zoom / 100.f; // + ry/3276800.f * zoom / 70.f
+	aimY = ClampFloat(aimY, -1.483153, 0.785006); 
 
-	aimX -= (float)xmouse * looksensitivity / scale * zoom / 70.f;
+	aimX -= (float)xmouse * looksensitivity / scale * zoom / 140.f + rx/3276805.f * zoom / 100.f;
 
-	if(xmouse != 0 && ymouse != 0){
+
+
+	//while aiming, needed to transition from aim lock to manual aiming when moving outside the current target
+	if(aimlock_state == 255){ 
+		if (xmouse > 0){
+			PS2_MEM_WriteUInt8(0x700944, 255);
+			PS2_MEM_WriteUInt8(0x7009C4, 255);
+		}
+	
+		if (xmouse < 0){
+			PS2_MEM_WriteUInt8(0x700944, 0);
+			PS2_MEM_WriteUInt8(0x7009C4, 0);
+		}
+	}
+	
+
+	if(xmouse != 0 && ymouse != 0){ //only mouse movement
 		PS2_MEM_WriteFloat(SA_CAMXSIN, camXSin);
 		PS2_MEM_WriteFloat(SA_CAMXCOS, camXCos);
+		PS2_MEM_WriteFloat(SA_CAMY, camY);
+		PS2_MEM_WriteFloat(SA_CAMY2, camY);
 	}
 
-	PS2_MEM_WriteFloat(SA_CAMY, camY);
-	PS2_MEM_WriteFloat(SA_CAMY2, camY);
 
-	if(PS2_MEM_ReadInt(0x6FE8C0) == ped_p){
+	if(PS2_MEM_ReadUInt(0x6FE8C0) == ped_p){ //on foot
 		PS2_MEM_WriteFloat(SA_AIMY, aimY);
+		PS2_MEM_WriteFloat(SA_AIMX, aimX);
 	}
-
-	PS2_MEM_WriteFloat(SA_AIMX, aimX);
-
+	//printf("xmouse: %i\n", xmouse);
 }

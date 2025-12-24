@@ -29,6 +29,7 @@
 // offset from camYBase
 #define MGBH_CAMY 0x6AC
 #define MGBH_CAMX_BASE 0x70
+
 // offset from camXBase
 #define MGBH_CAMXSIN 0x20
 #define MGBH_CAMXCOS 0x28
@@ -37,12 +38,19 @@
 
 
 #define MGBH_SHIPCTRLBASE 0x0060B61C
-
 #define MGBH_SHIPCTRLY 0x918
 #define MGBH_SHIPCTRLX 0x91C
-
 #define MGBH_SHIPFLAG 0x52BE08
 
+#define MGBH_TURRETBASE 0x4D4340
+#define MGBH_TURRETY 0x964 //negative offset
+#define MGBH_TURRETX 0x960 //negative offset
+#define MGBH_TURRETZOOM 0x88C //negative offset
+
+#define MGBH_TURRETFLAG 0xEB 
+
+#define MGBH_ZOOMBASE 0x4D24B8
+#define MGBH_ZOOM 0x3E4 //negative offset from zoomBase
 
 
 // #define MGBH_CAMY 0xD79414
@@ -65,9 +73,10 @@ static const GAMEDRIVER GAMEDRIVER_INTERFACE =
 
 const GAMEDRIVER *GAME_PS2_MACEGRIFFIN = &GAMEDRIVER_INTERFACE;
 
-static uint32_t camYBase = 0;
-static uint32_t camXBase = 0;
-static uint32_t shipBase = 0;
+// static uint32_t camYBase = 0;
+// static uint32_t camXBase = 0;
+// static uint32_t shipBase = 0;
+// static uint32_t zoomBase = 0;
 
 //==========================================================================
 // Purpose: return 1 if game is detected
@@ -90,30 +99,39 @@ static void PS2_MGBH_Inject(void)
 		return;
 
 	float looksensitivity = (float)sensitivity / 20.f;
-	float scale = 800.f;
-
-	camYBase = PS2_MEM_ReadUInt(MGBH_CAMY_BASE);
-	camXBase = PS2_MEM_ReadUInt(camYBase + MGBH_CAMX_BASE);
+	float scale = 1200.f;
+	
+	
+	uint32_t camYBase = PS2_MEM_ReadUInt(MGBH_CAMY_BASE);
+	uint32_t camXBase = PS2_MEM_ReadUInt(camYBase + MGBH_CAMX_BASE);
+	uint32_t zoomBase = PS2_MEM_ReadUInt(MGBH_ZOOMBASE);
+	uint32_t turretBase = PS2_MEM_ReadUInt(MGBH_TURRETBASE);
+	
+	uint8_t turretflag = PS2_MEM_ReadUInt8(turretBase + MGBH_TURRETFLAG);
+	
+	float zoom = PS2_MEM_ReadFloat(zoomBase - MGBH_ZOOM);
+	
 
 	float camY = PS2_MEM_ReadFloat(camYBase + MGBH_CAMY);
-	camY -= (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale;
-	camY = ClampFloat(camY, -1.308996916f, 1.570796371f);
+	camY -= (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale * (pow((zoom / 0.6f), 7));
+	
 
 	float camXSin = PS2_MEM_ReadFloat(camXBase + MGBH_CAMXSIN);
 	float camXCos = PS2_MEM_ReadFloat(camXBase + MGBH_CAMXCOS);
 
 	float angle = atan(camXSin / camXCos);
+
 	if (camXCos < 0)
 		angle += TAU / 2;
 
-	angle += (float)xmouse * looksensitivity / scale;
+	angle += (float)xmouse * looksensitivity / scale * (pow((zoom / 0.6f), 7));
 
 	camXSin = sin(angle);
 	camXCos = cos(angle);
 
 
 
-	shipBase = PS2_MEM_ReadPointer(MGBH_SHIPCTRLBASE);
+	uint32_t shipBase = PS2_MEM_ReadPointer(MGBH_SHIPCTRLBASE);
 
 	float rstickY = PS2_MEM_ReadFloat(shipBase + MGBH_SHIPCTRLY);
 	float rstickX = PS2_MEM_ReadFloat(shipBase + MGBH_SHIPCTRLX);
@@ -124,11 +142,32 @@ static void PS2_MGBH_Inject(void)
 	ClampFloat(rstickY, -1.f, 1.f);
 	ClampFloat(rstickX, -1.f, 1.f);
 
+	float turretY = PS2_MEM_ReadFloat(turretBase - MGBH_TURRETY);
+	float turretX = PS2_MEM_ReadFloat(turretBase - MGBH_TURRETX);
+	float tzoom = PS2_MEM_ReadFloat(turretBase - MGBH_TURRETZOOM);
+
+
+	turretY -= (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale;
+	turretX += (float)xmouse * looksensitivity / scale;
+
+
 
 	
+	if (turretflag){ // turret active
+		
+		PS2_MEM_WriteFloat(camXBase + MGBH_CAMXSIN, camXSin);
+		PS2_MEM_WriteFloat(camXBase + MGBH_CAMXCOS, camXCos);
+		PS2_MEM_WriteFloat(camXBase + MGBH_CAMXCOS2, camXCos);
+		PS2_MEM_WriteFloat(camXBase + MGBH_CAMXSIN_NEG, -camXSin);
+		PS2_MEM_WriteFloat(camYBase + MGBH_CAMY, camY);
+			
+		PS2_MEM_WriteFloat(turretBase - MGBH_TURRETY, turretY);
+		PS2_MEM_WriteFloat(turretBase - MGBH_TURRETX, turretX);
+
+	} 
 	
 	if (PS2_MEM_ReadUInt8(MGBH_SHIPFLAG)){
-	
+		
 		PS2_MEM_WriteFloat(shipBase + MGBH_SHIPCTRLY, rstickY);
 		PS2_MEM_WriteFloat(shipBase + MGBH_SHIPCTRLX, rstickX);
 
@@ -137,6 +176,16 @@ static void PS2_MGBH_Inject(void)
 		PS2_MEM_WriteFloat(camXBase + MGBH_CAMXCOS, camXCos);
 		PS2_MEM_WriteFloat(camXBase + MGBH_CAMXCOS2, camXCos);
 		PS2_MEM_WriteFloat(camXBase + MGBH_CAMXSIN_NEG, -camXSin);
+
+		camY = ClampFloat(camY, -1.308996916f, 1.570796371f);
 		PS2_MEM_WriteFloat(camYBase + MGBH_CAMY, camY);
 	}
+
+	
+
+
+	
+
+	//printf("camY address: %X\n", camYBase + MGBH_CAMY);
+	//printf("camY value: %f\n", camY);
 }

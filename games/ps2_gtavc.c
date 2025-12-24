@@ -31,13 +31,9 @@
 #define GTAVC_FPCAMY 0x005BB14C
 #define GTAVC_ZOOM 0x005BB154
 
-#define GTAVC_FPCAMY2 0x004E3248
-#define GTAVC_FPCAMX2 0x004E3234
-#define GTAVC_ZOOM2 0x004E3274
-
 #define GTAVC_CAMY 0x005BB0F4
-#define GTAVC_CAMY2 0x4E31A8
-#define GTAVC_BODYANGLE 0xB658E0
+
+#define DEAD_ZONE 0.0f
 
 
 static uint8_t PS2_GTAVC_Status(void);
@@ -70,8 +66,8 @@ static uint8_t PS2_GTAVC_Status(void)
 //==========================================================================
 static void PS2_GTAVC_Inject(void)
 {
-	if(xmouse == 0 && ymouse == 0 && rx == 0 && ry == 0) // if mouse or RightStick is idle
-	 	return;
+	// if(xmouse == 0 && ymouse == 0 && rx == 0 && ry == 0) // if mouse or RightStick is idle
+	//  	return;
 	
 
 	//disabling camX spring
@@ -97,17 +93,9 @@ static void PS2_GTAVC_Inject(void)
 	float fpcamX = PS2_MEM_ReadFloat(GTAVC_FPCAMX);
 	float zoom = PS2_MEM_ReadFloat(GTAVC_ZOOM);
 
-	float fpcamY2 = PS2_MEM_ReadFloat(GTAVC_FPCAMY2);
-	float fpcamX2 = PS2_MEM_ReadFloat(GTAVC_FPCAMX2);
-	float zoom2 = PS2_MEM_ReadFloat(GTAVC_ZOOM2);
-
 	float camY = PS2_MEM_ReadFloat(GTAVC_CAMY);
-	float bodyAngle = PS2_MEM_ReadFloat(GTAVC_BODYANGLE);
 
-	
 
-	bodyAngle -= (float)xmouse * looksensitivity * zoom / 1000000.f;
-	
 
 	fpcamY -= (float)((invertpitch ? -ymouse : ymouse) * looksensitivity * zoom / 1000000.f + ry/327680000.f * zoom);
 	fpcamY = ClampFloat(fpcamY, -1.562069654, 1.04719758);
@@ -116,31 +104,33 @@ static void PS2_GTAVC_Inject(void)
 
 
 
-	fpcamY2 -= (float)((invertpitch ? -ymouse : ymouse) * looksensitivity * zoom2 / 1000000.f + ry/327680000.f * zoom2);
-	fpcamY2 = ClampFloat(fpcamY, -1.562069654, 1.04719758);
-
-	fpcamX2 -= (float)(xmouse * looksensitivity * zoom2 / 1000000.f + rx/327680000.f * zoom2);
-
-
-	
-
 	camY += (float)(invertpitch ? -ymouse : ymouse) * looksensitivity /  6000.f + ry/1638400.f;
+
+	float moveSpeed = fabs(PS2_MEM_ReadFloat(0x5BB1A8));
+
+	if (camY > 1.8f && moveSpeed > 0.001f && ymouse == 0)
+		camY -= 0.005f;
+	if (camY < 1.5f && moveSpeed > 0.001f && ymouse == 0)
+		camY += 0.005f;
+
+	if (fpcamY > 0.19f && moveSpeed > 0.001f && ymouse == 0 && ry == 0)
+		fpcamY -= fabs(fpcamY) / 300.f;
+	if (fpcamY < 0.17f && moveSpeed > 0.001f && ymouse == 0 && ry == 0)
+		fpcamY += fabs(fpcamY) / 400.f + 0.001f;
+
 	
 
+	camY = ClampFloat(camY, -1.36, 4.73);
 
-	camY = ClampFloat(camY, -1.06, 3.73);
 
-		
-	
+
+
 
 	PS2_MEM_WriteFloat(GTAVC_FPCAMY, fpcamY);
 	PS2_MEM_WriteFloat(GTAVC_FPCAMX, fpcamX);
 
 	
-	//PS2_MEM_WriteFloat(GTAVC_FPCAMY2, fpcamY2);
-	//PS2_MEM_WriteFloat(GTAVC_FPCAMX2, fpcamX2);
-
 	PS2_MEM_WriteFloat(GTAVC_CAMY, camY);
-	//PS2_MEM_WriteFloat(GTAVC_CAMY2, camY);
 
 }
+
