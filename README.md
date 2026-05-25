@@ -240,7 +240,7 @@ To apply the fix you should place the 'patches.zip' **(DO NOT EXTRACT)** file in
 
 The use of included PCSX2 input profiles are recommended.
 
-#### INSTRUCTIONS:
+#### GAMEPAD RIGHT STICK FIX INSTRUCTIONS:
 
 - Open CMD or Terminal as administrator.
 
