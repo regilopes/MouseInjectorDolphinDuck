@@ -101,8 +101,8 @@ avoid clicking off the window.
 |<sup> Shadow Tower (USA) |<sup> SLUS-00863 |<sup> Good |<sup> Not fully tested |<sup> - |<sup> - |
 |<sup> South Park (USA) |<sup> SLUS-00936 |<sup> Good |<sup> Supplied cheats recommended</br>Not fully tested |<sup> - |<sup> **SouthPark_SLUS-00936.cht** |
 |<sup> Syphon Filter (USA) |<sup> SCUS-94240 |<sup> Good |<sup> Right Analog Stick can be used for a more modern camera control. You MUST unbind your gamepad Right Stick on the emulator controller settings so it don't conflict with the native in-game character controls (Right analog moves and strafe on Syphon Filter). |<sup> - |<sup> - |
-|<sup> Syphon Filter 2 (USA) |<sup> SLUS-00936 |<sup> Good |<sup> Same as above |<sup> - |<sup> - |
-|<sup> Syphon Filter 3 (USA) |<sup> SLUS-00936 |<sup> Good |<sup> Same as above |<sup> - |<sup> - |
+|<sup> Syphon Filter 2 (USA) |<sup> SLUS-00936 |<sup> Good |<sup> Same as Syphon Filter 1 |<sup> - |<sup> - |
+|<sup> Syphon Filter 3 (USA) |<sup> SLUS-00936 |<sup> Good |<sup> Same as Syphon Filter 1 |<sup> - |<sup> - |
 |<sup> Uprising X (USA) |<sup> SLUS-00686 |<sup> Fair |<sup> None |<sup> - |<sup> - |
 * NOTE: If DuckStation is not hooking, try restoring the default settings. 'Settings->General->Restore Defaults'
 * Importing cheat files in DuckStation: 'Tools->Cheat Manager->Cheat List->Import->From File'
@@ -156,8 +156,8 @@ avoid clicking off the window.
 | Destroy All Humans! 2 (USA) | SLUS-21439 | Good | <sup>**Requires supplied cheat file**</sub> | <sup>Not fully tested</sub> | **42DF8C8C.pnach** |
 | Dirge of Cerberus - Final Fantasy VII (USA) | SLUS-21419 | Good | <sup>**Requires supplied cheat file to disable auto-lookahead**</sub> | <sup>Not fully tested</sub> | **44A5FA15.pnach** |
 | Eternal Ring (USA) | SLUS-20015 | Good | <sup>Not fully tested</sub> | - | - |
-| Grand Theft Auto III (USA) | SLUS-20062 | Great | <sup>3rd person camera can be controlled via gamepad</sub> | - | - |
-| Grand Theft Auto Vice City (USA) | SLUS-20552 | Great | <sup>3rd person camera can be controlled via gamepad. Version 3.0</sub> | - | - |
+| Grand Theft Auto III (USA) | SLUS-20062 | Great | <sup>Added modern 3rd person camera controls via gamepad*</sub> | - | - |
+| Grand Theft Auto Vice City (USA) | SLUS-20552 | Great | <sup>Added modern 3rd person camera controls via gamepad*. Version 3.0</sub> | - | - |
 | Grand Theft Auto San Andreas (USA) | SLUS-20946 | Great | <sup>Not fully tested. Version 1.03</sub> | - | - |
 | Grand Theft Auto Liberty City Stories (USA) | SLUS-21423 | Great | <sup>Not fully tested</sub> | - | - |
 | Ghost in the Shell: Stand Alone Complex (USA) | SLUS-21006 | Fair | <sup>Horizontal camera while climbing not clamped</sub> | - | - |
@@ -242,12 +242,16 @@ The use of included PCSX2 input profiles are recommended.
 
 #### INSTRUCTIONS:
 
-- First you must open the mouse injector executable via Windows Terminal, (it's done by default on Win 11 I guess).
+- Open CMD or Terminal as administrator.
 
-- Open Windows Terminal settings by righ clicking on the window title bar
-<img width="533" height="271" alt="image" src="https://github.com/user-attachments/assets/deb997b0-51a9-406f-bff1-a5d6b1304506" />
+- Run the following command with the full path for your Mouse Injector application:
 
-- On `Appearance` you must enable `Always On Top` and `Hide Terminal in the notification area when it is minimized`. You can enable `Automatically hide window` too if you like, but it is not mandatory to the fix.
+example:
+
+        powercfg /powerthrottling disable /path "C:\Downloads\Mouse Injector.exe"
+  
+
+- Restart Windows if the gamepad Right Stick still feeling too slow/fast.
 
 Windows for some reason throttle the application whe minimized making right stick speed inconsitent. 
 
