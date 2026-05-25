@@ -156,8 +156,8 @@ avoid clicking off the window.
 | Destroy All Humans! 2 (USA) | SLUS-21439 | Good | <sup>**Requires supplied cheat file**</sub> | <sup>Not fully tested</sub> | **42DF8C8C.pnach** |
 | Dirge of Cerberus - Final Fantasy VII (USA) | SLUS-21419 | Good | <sup>**Requires supplied cheat file to disable auto-lookahead**</sub> | <sup>Not fully tested</sub> | **44A5FA15.pnach** |
 | Eternal Ring (USA) | SLUS-20015 | Good | <sup>Not fully tested</sub> | - | - |
-| Grand Theft Auto III (USA) | SLUS-20062 | Great | <sup>Added modern 3rd person camera controls via gamepad*</sub> | - | - |
-| Grand Theft Auto Vice City (USA) | SLUS-20552 | Great | <sup>Added modern 3rd person camera controls via gamepad*. Version 3.0</sub> | - | - |
+| Grand Theft Auto III (USA) | SLUS-20062 | Great | <sup>Added modern 3rd person camera controls via gamepad* If Right Stick camera feels slow see [this](https://github.com/regilopes/MouseInjectorDolphinDuck/blob/master/README.md#gamepad-right-stick-fix-instructions).</sub> | - | - |
+| Grand Theft Auto Vice City (USA) | SLUS-20552 | Great | <sup>Added modern 3rd person camera controls via gamepad* If Right Stick camera feels slow see [this](https://github.com/regilopes/MouseInjectorDolphinDuck/blob/master/README.md#gamepad-right-stick-fix-instructions). Version 3.0</sub> | - | - |
 | Grand Theft Auto San Andreas (USA) | SLUS-20946 | Great | <sup>Not fully tested. Version 1.03</sub> | - | - |
 | Grand Theft Auto Liberty City Stories (USA) | SLUS-21423 | Great | <sup>Not fully tested</sub> | - | - |
 | Ghost in the Shell: Stand Alone Complex (USA) | SLUS-21006 | Fair | <sup>Horizontal camera while climbing not clamped</sub> | - | - |
