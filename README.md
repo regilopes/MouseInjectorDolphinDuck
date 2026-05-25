@@ -229,6 +229,8 @@ avoid clicking off the window.
 ### Q: Will this work with netplay/online?
   - Most likely **NO**, single-player only.
 
+# **|  PATCHES REQUIREDS  |**
+
 Some games on PCSX2 requires that you update you patches.zip file like described below. You must replace patches.zip everytime you update PCSX2 version, as it gets overwritten by the update.
 
 To apply the fix you should place the 'patches.zip' **(DO NOT EXTRACT)** file inside the 'resources' folder of your PCSX2 instalation folder. Then you need enable them into corresponding GTA's game properties on Patches.
@@ -236,9 +238,13 @@ To apply the fix you should place the 'patches.zip' **(DO NOT EXTRACT)** file in
 
 <img width="600" height="400" alt="image" src="https://github.com/user-attachments/assets/b430eb04-dcad-452b-a27a-d48e1bf4891a" />
 
- Gamepad inputs now supported via SDL2 library to restore or enhance some gamepad controls when using the injector. Works only on version v1.4 or higher (GTA III releases or newer).  If you're having trouble with Right Stick camera control being too fast or too slow try the instructions described below. 
+# **|  GAMEPAD SUPPORT  |**
+
+ Gamepad inputs now supported via SDL2 library to restore or enhance some gamepad controls when using the injector. Works only on some specific games (GTA III, Vice City, Resident Evil 4, PS1 Syphon Filter series) explicited on each release description note.  If you're having trouble with Right Stick camera control being too fast or too slow try the instructions described below. 
 
 The use of included PCSX2 input profiles are recommended.
+
+
 
 #### GAMEPAD RIGHT STICK FIX INSTRUCTIONS:
 
