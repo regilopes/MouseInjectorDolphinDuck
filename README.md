@@ -240,7 +240,7 @@ To apply the fix you should place the 'patches.zip' **(DO NOT EXTRACT)** file in
 
 # **|  GAMEPAD SUPPORT  |**
 
- Gamepad inputs now supported via SDL2 library to restore or enhance some gamepad controls when using the injector. Works only on some specific games (GTA III, Vice City, Resident Evil 4, PS1 Syphon Filter series) explicited on each release description note.  If you're having trouble with Right Stick camera control being too fast or too slow try the instructions described below. 
+ Gamepad inputs are now supported via SDL2 library to restore or enhance some gamepad controls when using the injector. Works only on some specific games (GTA III, Vice City, Resident Evil 4, PS1 Syphon Filter series) explicited on each release description note.  If you're having trouble with Right Stick camera control being too fast or too slow try the instructions described below. 
 
 The use of included PCSX2 input profiles are recommended.
 
