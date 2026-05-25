@@ -100,6 +100,9 @@ avoid clicking off the window.
 |<sup> Revolution X (USA) |<sup> SLUS-00012 |<sup> Good |<sup> None |<sup> - |<sup> - |
 |<sup> Shadow Tower (USA) |<sup> SLUS-00863 |<sup> Good |<sup> Not fully tested |<sup> - |<sup> - |
 |<sup> South Park (USA) |<sup> SLUS-00936 |<sup> Good |<sup> Supplied cheats recommended</br>Not fully tested |<sup> - |<sup> **SouthPark_SLUS-00936.cht** |
+|<sup> Syphon Filter (USA) |<sup> SCUS-94240 |<sup> Good |<sup> Right Analog Stick can be used for a more modern camera control. You MUST unbind your gamepad Right Stick on the emulator controller settings so it don't conflict with the native in-game character controls (Right analog moves and strafe on Syphon Filter). |<sup> - |<sup> - |
+|<sup> Syphon Filter 2 (USA) |<sup> SLUS-00936 |<sup> Good |<sup> Same as above |<sup> - |<sup> - |
+|<sup> Syphon Filter 3 (USA) |<sup> SLUS-00936 |<sup> Good |<sup> Same as above |<sup> - |<sup> - |
 |<sup> Uprising X (USA) |<sup> SLUS-00686 |<sup> Fair |<sup> None |<sup> - |<sup> - |
 * NOTE: If DuckStation is not hooking, try restoring the default settings. 'Settings->General->Restore Defaults'
 * Importing cheat files in DuckStation: 'Tools->Cheat Manager->Cheat List->Import->From File'
