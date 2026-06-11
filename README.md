@@ -179,6 +179,7 @@ avoid clicking off the window.
 | Red Dead Revolver (USA) | SLUS-20500 | Fair | <sup>Gatling guns and final scene may break if game is loaded from memory card after a shutdown.  **Fix below**</sub> | <sup>Target Mode: Toggle</sub> | - |
 | Resident Evil: Dead Aim (USA) | SLUS-20669 | Good | <sup>**Requires supplied cheat file**</br>Third-person camera y-axis not supported</sub> | - | **FBB5290C.pnach** |
 | Return to Castle Wolfenstein: Operation Resurrection (USA) | SLUS-20297 | Good | <sup>Not fully tested</sub> | <sup>Auto Center View: Off</br>Always Aim: Off</sub> | - |
+| Red Faction (v2.00) (USA) | SLUS-20073 | Fair | <sup>Turrets and Vehicles currently not supported</br>Not fully tested</sub> | - | - |
 | Robotech: Invasion (USA) | SLUS-20823 | Fair | <sup>Turrets not supported</br>Not fully tested</sub> | - | - |
 | SOCOM U.S. Navy SEALs (USA) | SCUS-97134 | Fair | <sup>Not fully tested</sub> | <sup>Aim Assist: Off</sub> | - |
 | Serious Sam: Next Encounter (USA) | SLUS-20907 | Good | <sup>Vehicles not supported</br>Not fully tested</sub> | <sup>Auto Center: Off</br>Auto Aim: Off</sub> | - |
