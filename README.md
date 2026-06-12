@@ -158,8 +158,9 @@ avoid clicking off the window.
 | Eternal Ring (USA) | SLUS-20015 | Good | <sup>Not fully tested</sub> | - | - |
 | Grand Theft Auto III (USA) | SLUS-20062 | Great | <sup>Added modern 3rd person camera controls via gamepad* If Right Stick camera feels slow see [this](https://github.com/regilopes/MouseInjectorDolphinDuck#gamepad-right-stick-fix-instructions).</sub> | - | - |
 | Grand Theft Auto Vice City (USA) | SLUS-20552 | Great | <sup>Added modern 3rd person camera controls via gamepad* If Right Stick camera feels slow see [this](https://github.com/regilopes/MouseInjectorDolphinDuck#gamepad-right-stick-fix-instructions). Version 3.0</sub> | - | - |
-| Grand Theft Auto San Andreas (USA) | SLUS-20946 | Great | <sup>Not fully tested. Version 1.03</sub> | - | - |
-| Grand Theft Auto Liberty City Stories (USA) | SLUS-21423 | Great | <sup>Not fully tested</sub> | - | - |
+| Grand Theft Auto San Andreas (USA) | SLUS-20946 | Great | <sup>Not fully tested. Version 1.03. Needs patches.zip (search for PATCHES REQUIRED on this readme)</sub> | - | - |
+| Grand Theft Auto Liberty City Stories (USA) | SLUS-21423 | Great | <sup>Needs patches.zip (search for PATCHES REQUIRED on this readme)</sub> | - | - |
+| Grand Theft Auto Vice City Stories (USA) | SLUS-21590 | Great | <sup>Needs patches.zip (search for PATCHES REQUIRED on this readme)</sub> | - | - |
 | Ghost in the Shell: Stand Alone Complex (USA) | SLUS-21006 | Fair | <sup>Horizontal camera while climbing not clamped</sub> | - | - |
 | Global Defence Force (PAL) / Chikyū Bōeigun 2 (Japan) | SLES-54464, SLPM-62652 | Good | <sup>Vehicle mouse control is experimental</br>Not fully tested</sub> | <sup>Control Type: Technical</sub> | - |
 | Gunslinger Girl Vol. 1 (Japan)| SLPS-25343 | Fair | <sup>Not fully tested</sub> | - | - |
@@ -230,11 +231,11 @@ avoid clicking off the window.
 ### Q: Will this work with netplay/online?
   - Most likely **NO**, single-player only.
 
-# **|  PATCHES REQUIREDS  |**
+# **|  PATCHES REQUIRED  |**
 
 Some games on PCSX2 requires that you update you patches.zip file like described below. You must replace patches.zip everytime you update PCSX2 version, as it gets overwritten by the update.
 
-To apply the fix you should place the 'patches.zip' **(DO NOT EXTRACT)** file inside the 'resources' folder of your PCSX2 instalation folder. Then you need enable them into corresponding GTA's game properties on Patches.
+To apply the fix you should place the 'patches.zip' **(DO NOT EXTRACT)** file inside the 'resources' folder of your PCSX2 instalation folder. Then you need enable them into corresponding game properties on Patches.
 
 
 <img width="600" height="400" alt="image" src="https://github.com/user-attachments/assets/b430eb04-dcad-452b-a27a-d48e1bf4891a" />
