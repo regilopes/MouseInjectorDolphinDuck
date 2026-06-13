@@ -150,7 +150,6 @@ avoid clicking off the window.
 | Black (USA) | SLUS-21376 | Good | <sup>Not fully tested</sub> | - | - |
 | Call of Duty 3 (USA) | SLUS-21426 | Good | <sup>3rd-Person Jeep camera not supported</br>Not fully tested</sub> | - | - |
 | Call of Duty: Finest Hour (USA) | SLUS-20725 | Good | <sup>None</sub> | <sup>Aim Assist: Off</sub> | - |
-| Call of Duty: World at War - Final Fronts (USA) | SLUS-21746 | Good | <sup>None</sub> | <sup>Sticky AIM: Off</sub> | - |
 | Cold Winter (USA) | SLUS-20845 | Good | <sup>Split-screen mode not supported</sub> | <sup>Profile options - Aim Assist: Off</sub> | - |
 | Darkwatch (USA) | SLUS-21043 | Good | <sup>**Requires supplied cheat file**</br>Horse aiming is not quite right but is usable.</sub> | - | **327052E8.pnach** |
 | Destroy All Humans! (USA) | SLUS-20945 | Good | <sup>**Requires supplied cheat file to disable aim-assist**</sub> | - | **67A29886.pnach** |
