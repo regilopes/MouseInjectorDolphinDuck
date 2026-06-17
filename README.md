@@ -149,6 +149,7 @@ avoid clicking off the window.
 | Beverly Hills Cop (PAL) | SLES-54456 | Fair | <sup>Not fully tested</sub> | - | - |
 | Black (USA) | SLUS-21376 | Good | <sup>Not fully tested</sub> | - | - |
 | Call of Duty 3 (USA) | SLUS-21426 | Good | <sup>3rd-Person Jeep camera not supported</br>Not fully tested</sub> | - | - |
+| Call of Duty 2: Big Red One (USA) | SLUS-21228 | Good | <sup>none</sub> | - | - |
 | Call of Duty: Finest Hour (USA) | SLUS-20725 | Good | <sup>None</sub> | <sup>Aim Assist: Off</sub> | - |
 | Call of Duty: World at War - Final Fronts (USA) | SLUS-21746 | Good | <sup>None</sub> | <sup>Sticky AIM: Off</sub> | - |
 | Cold Winter (USA) | SLUS-20845 | Good | <sup>Split-screen mode not supported</sub> | <sup>Profile options - Aim Assist: Off</sub> | - |
