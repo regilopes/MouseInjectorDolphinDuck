@@ -31,6 +31,10 @@
 #define LCS_CAMY 0x43C038
 #define LCS_CAMY2 0x43C048
 
+#define LCS_MAIMXSIN 0x017E6550
+#define LCS_MAIMXCOS 0x017E6554
+#define LCS_MAIMXY 0x017E6558
+
 #define LCS_CAMXSIN_MID 0x43BF70
 #define LCS_CAMXCOS_MID 0x43BF74
 #define LCS_CAMY_MID 0x43BF78
@@ -81,6 +85,15 @@ static void PS2_LCS_Inject(void)
 	PS2_MEM_WriteUInt(0x00283184, 0x00000000);
 	}
 
+	//disabling manual aim Y (maimY) spring middle snap
+	if (PS2_MEM_ReadUInt(0x0034AD9C) == 0x0C04115A)
+	PS2_MEM_WriteUInt(0x0034AD9C, 0x00000000);
+
+	//disabling manual aim Y (maimY) spring
+	if (PS2_MEM_ReadUInt(0x0034AC20) == 0x0C04115A)
+	PS2_MEM_WriteUInt(0x0034AC20, 0x00000000);
+	
+
 
 
 // //disabling car camY spring
@@ -99,15 +112,15 @@ static void PS2_LCS_Inject(void)
 	float camYMid = PS2_MEM_ReadFloat(LCS_CAMY_MID);
 	float camXSinMid = PS2_MEM_ReadFloat(LCS_CAMXSIN_MID);
 	float camXCosMid = PS2_MEM_ReadFloat(LCS_CAMXCOS_MID);
-	
-	float camY = (PS2_MEM_ReadFloat(LCS_CAMY) - camYMid) / 10.f;
-	camY += (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale;
-	// camY = ClampFloat(camY, -0.707106, 0.422618);
-	camY = (camY * 10.f) + camYMid;
-	
-	
+
 	float camXSin = (PS2_MEM_ReadFloat(LCS_CAMXSIN) - camXSinMid) / 10.f;
 	float camXCos = (PS2_MEM_ReadFloat(LCS_CAMXCOS) - camXCosMid) / 10.f;
+	
+	float camY = (PS2_MEM_ReadFloat(LCS_CAMY) - camYMid) / 10.f;
+
+	camY += (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale + ry/3276800.f;
+	// camY = ClampFloat(camY, -0.707106, 0.422618);
+	camY = (camY * 10.f) + camYMid;
 	
 	float angle = atan(camXSin / camXCos);
 	if (camXCos < 0)
@@ -120,20 +133,49 @@ static void PS2_LCS_Inject(void)
 
 
 	
-	aimY -= (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale * zoom / 70.f + ry/3276800.f * zoom / 100.f; //+ ry/3276800.f * zoom / 70.f
+	aimY -= (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale * zoom / 140.f + ry/3276800.f * zoom / 100.f; //+ ry/3276800.f * zoom / 70.f
 	
 	//if(ry == 0)
 	//	aimY -= aimY / 30.f;
 
-	aimX -= (float)xmouse * looksensitivity / scale * zoom / 70.f;
+	aimX -= (float)xmouse * looksensitivity / scale * zoom / 140.f + rx/3276800.f * zoom / 100.f;
+	aimY = ClampFloat(aimY, -1.56, 1.04);
 
-
+	
+	if(PS2_MEM_ReadUInt8(0x3D9034) != 1){ //only when not locked on target
 	PS2_MEM_WriteFloat(LCS_CAMXSIN, camXSin);
 	PS2_MEM_WriteFloat(LCS_CAMXCOS, camXCos);
 	PS2_MEM_WriteFloat(LCS_CAMY, camY);
 	PS2_MEM_WriteFloat(LCS_CAMY2, camY);
 	
-	PS2_MEM_WriteFloat(LCS_AIMY, aimY);
-	PS2_MEM_WriteFloat(LCS_AIMX, aimX);
+		PS2_MEM_WriteFloat(LCS_AIMY, aimY);
+		PS2_MEM_WriteFloat(LCS_AIMX, aimX);
+	}
+
+	//While manual aiming / aiming as a vehicle passenger
+	float maimXSin = (PS2_MEM_ReadFloat(LCS_MAIMXSIN) - camXSinMid) / 30.f;
+	float maimXCos = (PS2_MEM_ReadFloat(LCS_MAIMXCOS) - camXCosMid) / 30.f;
+	float maimY = (PS2_MEM_ReadFloat(LCS_MAIMXY) - camYMid) / 30.f;
+
+	maimY += (float)(invertpitch ? ymouse : -ymouse) * looksensitivity / scale;
+	maimY = ClampFloat(maimY, -0.7, 0.7);
+	//printf("maimY: %f\n", maimY);
+	maimY = (maimY * 30.f) + camYMid;
+
+
+	float maimAngle = atan(maimXSin / maimXCos); 
+	if (maimXCos < 0)
+		maimAngle += TAU / 2;
+
+	maimAngle += (float)xmouse * looksensitivity / scale;
+
+	maimXSin = (sin(maimAngle) * 30.f) + camXSinMid;
+	maimXCos = (cos(maimAngle) * 30.f) + camXCosMid;
+
+
+
+	PS2_MEM_WriteFloat(LCS_MAIMXSIN, maimXSin);
+	PS2_MEM_WriteFloat(LCS_MAIMXCOS, maimXCos);
+	PS2_MEM_WriteFloat(LCS_MAIMXY, maimY);
 
 }
