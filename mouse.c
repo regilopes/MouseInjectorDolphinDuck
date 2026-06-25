@@ -24,9 +24,14 @@
 
 int32_t xmouse, ymouse, mouse0, mouse1; // holds mouse input data (used for gamedrivers)
 
+extern uint8_t cursorlocktoggle; 
+
 static POINT mouselock; // center screen X and Y var for mouse
 static ManyMouseEvent event; // hold current mouse event
 static uint8_t lockmousecounter = 0; // limit SetCursorPos execution
+HWND hwnd;
+
+
 
 uint8_t MOUSE_Init(void);
 void MOUSE_Quit(void);
@@ -52,7 +57,14 @@ void MOUSE_Quit(void)
 //==========================================================================
 void MOUSE_Lock(void)
 {
+	// RECT rect;
+	// hwnd = GetForegroundWindow();
+	// GetWindowRect(hwnd, &rect); // get the window rect of emulator
+	//ClipCursor(&rect);
+
+
 	GetCursorPos(&mouselock);
+
 }
 //==========================================================================
 // Purpose: update xmouse/ymouse with mouse input
@@ -60,14 +72,18 @@ void MOUSE_Lock(void)
 //==========================================================================
 void MOUSE_Update(const uint16_t tickrate)
 {
-	if(tickrate > 8) // if game driver tickrate is over 8ms, do not bother limiting SetCursorPos calls
-		SetCursorPos(mouselock.x, mouselock.y); // set mouse position back to lock position
-	else
-	{
-		if(lockmousecounter % 25 == 0) // don't execute every tick
+
+	if(cursorlocktoggle){
+		if(tickrate > 8) // if game driver tickrate is over 8ms, do not bother limiting SetCursorPos calls
 			SetCursorPos(mouselock.x, mouselock.y); // set mouse position back to lock position
-		lockmousecounter++; // overflow pseudo-counter
+		else
+		{
+			if(lockmousecounter % 25 == 0) // don't execute every tick
+				SetCursorPos(mouselock.x, mouselock.y); // set mouse position back to lock position
+			lockmousecounter++; // overflow pseudo-counter
+		}
 	}
+
 	//mainJoy();
 	//JOYSTICK_UPDATE();
 	xmouse = ymouse = mouse0 = mouse1 = 0; // reset mouse input

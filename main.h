@@ -31,9 +31,11 @@
 #define K_6 GetAsyncKeyState(0x36) // key '6'
 #define K_7 GetAsyncKeyState(0x37) // key '7'
 #define K_8 GetAsyncKeyState(0x38) // key '8'
+#define K_9 GetAsyncKeyState(0x39) // key '9'
 #define J_A GetAsyncKeyState(0xC3) // joy 'A'
 #define K_CTRL0 (GetAsyncKeyState(0x11) && GetAsyncKeyState(0x30) || GetAsyncKeyState(0x30) && GetAsyncKeyState(0x11)) // key combo control + '0'
 #define K_CTRL1 (GetAsyncKeyState(0x11) && GetAsyncKeyState(0x31) || GetAsyncKeyState(0x31) && GetAsyncKeyState(0x11)) // key combo control + '1'
+#define K_CTRL4 (GetAsyncKeyState(0x11) && GetAsyncKeyState(0x34) || GetAsyncKeyState(0x34) && GetAsyncKeyState(0x11)) // key combo control + '4'
 #define K_PLUS (GetAsyncKeyState(0x6B) || GetAsyncKeyState(0xBB)) // key '+'
 #define K_MINUS (GetAsyncKeyState(0x6D) || GetAsyncKeyState(0xBD)) // key '-'
 #define K_INSERT GetAsyncKeyState(0x2D) // key 'Insert'
@@ -61,6 +63,12 @@ inline int32_t ClampInt(const int32_t value, const int32_t min, const int32_t ma
 inline uint16_t ClampHalfword(const uint16_t value, const uint16_t min, const uint16_t max)
 {
 	const int16_t test = value < min ? min : value;
+	return test > max ? max : test;
+}
+
+inline uint8_t ClampByte(const uint8_t value, const uint8_t min, const uint8_t max)
+{
+	const int8_t test = value < min ? min : value;
 	return test > max ? max : test;
 }
 

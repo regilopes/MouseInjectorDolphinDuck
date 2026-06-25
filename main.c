@@ -31,6 +31,7 @@
 
 enum EDITINGCURRENT {EDITINGSENSITIVITY = 0, EDITINGCROSSHAIR};
 
+uint8_t cursorlocktoggle = 0;
 static uint8_t mousetoggle = 0;
 static uint8_t selectedoption = EDITINGSENSITIVITY;
 static uint8_t locksettings = 0;
@@ -217,9 +218,9 @@ static void GUI_Welcome(void)
 static void GUI_Interact(void)
 {
 	uint8_t updateinterface = 0, updatequick = 0;
-	if(K_4) // mouse toggle (4)
+	if(K_CTRL4) // mouse toggle (4)
 	{
-		MOUSE_Lock();
+		//MOUSE_Lock();
 		MOUSE_Update(GAME_Tickrate());
 		JOYSTICK_Update(GAME_Tickrate()); //optional?
 		mousetoggle = !mousetoggle;
@@ -246,6 +247,14 @@ static void GUI_Interact(void)
 		optionToggle = !optionToggle;
 		updateinterface = 1;
 	}
+	
+	if(K_9 && !updateinterface) // mouse cursor toggle (9)
+	{
+		MOUSE_Lock();
+		cursorlocktoggle = !cursorlocktoggle;
+		updateinterface = 1;
+	}
+	
 	if(K_PLUS && !locksettings && !updateinterface) // numpad plus (+)
 	{
 		if(selectedoption == EDITINGSENSITIVITY && sensitivity < 200)
@@ -291,7 +300,7 @@ static void GUI_Update(void)
 	// printf("\n Mouse Injector for %s %s - %s\n", GAME_Name(), BUILDINFO, hookedEmulatorName); // title
 	printf("\n Mouse Injector for %s - %s\n", hookedEmulatorName, GAME_Name()); // title
 	printf("%s\n\n   Main Menu - Press [#] to Use Menu\n\n\n", LINE);
-	printf(mousetoggle ? "   [4] - [ON] Mouse Injection\n\n" : "   [4] - [OFF] Mouse Injection\n\n");
+	printf(mousetoggle ? "   [CTRL+4] - [ON] Mouse Injection\n\n" : "   [CTRL+4] - [OFF] Mouse Injection\n\n");
 	if(!locksettings)
 	{
 		printf("   [5] - Mouse Sensitivity: %d%%", sensitivity * 5);
@@ -305,12 +314,15 @@ static void GUI_Update(void)
 		printf(invertpitch ? "   [7] - [ON] Invert Pitch\n\n" : "   [7] - [OFF] Invert Pitch\n\n");
 		if (GAME_OptionSupported())
 			printf("   [8] - %s\n\n", GAME_OptionMessage());
-		printf("\n\n\n\n\n");
+
+		printf(cursorlocktoggle ? "   [9] - [ON] Lock Mouse Cursor\n\n" : "   [9] - [OFF] Lock Mouse Cursor\n\n");
+		printf("\n\n\n");
 		printf("   [CTRL+0] - Lock Settings\n\n");
 	}
 	else
 	{
-		printf("\n\n\n\n\n\n\n\n\n\n\n");
+		printf("\n\n\n\n\n\n\n");
+		printf(cursorlocktoggle ? "   [9] - [ON] Lock Mouse Cursor\n\n" : "   [9] - [OFF] Lock Mouse Cursor\n\n");
 		printf("   [CTRL+0] - Unlock Settings\n\n");
 	}
 	if(mousetoggle || locksettings)
@@ -443,7 +455,7 @@ void AccumulateAddRemainder(float *value, float *accumulator, float dir, float d
 	float r = fmod(dx, 1.f);
 
 	// if remainder + accumulation > 1, add 1
-	if (abs(r + *accumulator) >= 1)
+	if (fabsf(r + *accumulator) >= 1)
 	{
 		if (dir > 0)
 			*value += 1;
