@@ -127,6 +127,7 @@ avoid clicking off the window.
 | Game Title | Mouse Support | Issues | In-game Options | Cheat File |
 | --- | :---: | :-----------: | :---: | :---: |
 | GoldenEye: 007 (USA) | Fair | <sup>None</sub> | - | - |
+| Quake (USA) | Good | <sup>Not fully tested</sub> | - | - |
 | Sin and Punishment (J) | Good | <sup>Not fully tested</sub> | - | - |
 | 007: The World Is Not Enough (USA) | Good | <sup>Requires cheat for 'Cold Reception' mission</br>(disable cheat for multiplayer, may require restart)</br>Not fully tested</sub> | <sup>Auto Aim: Off</br>Look Ahead: Off</br>Auto Level: Off</sub>| <sup>**007 - The World Is Not Enough (USA).cht**</sub> |
 
@@ -145,6 +146,7 @@ avoid clicking off the window.
 | ---------- | :----: | :-----------: | :----: | :-------------: | :--------: |
 | 007: Agent Under Fire (USA) | SLUS-20265 | Good | <sup>Mouse movement warps camera while paused and during in-game cutscenes</br>Aim-lock not disabled on auto-scroller levels</sub> | - | - |
 | 50 Cent: Bulletproof (USA) | SLUS-21315 | Good | <sup>Not fully tested</sub> | <sup>Camera->Aim Assist: Off</sub> | - |
+| Area 51 (USA) | SLUS-20595 | Good | <sup>Not fully tested</br>Needs 'Mouse Injector Fixes' patch enabled on PCSX2 </sub></sub> | - | <sup>Needs updated patches.zip (search for PATCHES REQUIRED on this readme)</sub> |
 | Armored Core 2 (USA) | SLUS-20014 | Good | <sup>Arena replays broken</br>Not fully tested</sub> | - | - |
 | Beverly Hills Cop (PAL) | SLES-54456 | Fair | <sup>Not fully tested</sub> | - | - |
 | Black (USA) | SLUS-21376 | Good | <sup>Not fully tested</sub> | - | - |
@@ -158,11 +160,11 @@ avoid clicking off the window.
 | Destroy All Humans! 2 (USA) | SLUS-21439 | Good | <sup>**Requires supplied cheat file**</sub> | <sup>Not fully tested</sub> | **42DF8C8C.pnach** |
 | Dirge of Cerberus - Final Fantasy VII (USA) | SLUS-21419 | Good | <sup>**Requires supplied cheat file to disable auto-lookahead**</sub> | <sup>Not fully tested</sub> | **44A5FA15.pnach** |
 | Eternal Ring (USA) | SLUS-20015 | Good | <sup>Not fully tested</sub> | - | - |
-| Grand Theft Auto III (USA) | SLUS-20062 | Great | <sup>Added modern 3rd person camera controls via gamepad* If Right Stick camera feels slow see [this](https://github.com/regilopes/MouseInjectorDolphinDuck#gamepad-right-stick-fix-instructions).</sub> | - | - |
-| Grand Theft Auto Vice City (USA) | SLUS-20552 | Great | <sup>Added modern 3rd person camera controls via gamepad* If Right Stick camera feels slow see [this](https://github.com/regilopes/MouseInjectorDolphinDuck#gamepad-right-stick-fix-instructions). Version 3.0</sub> | - | - |
-| Grand Theft Auto San Andreas (USA) | SLUS-20946 | Great | <sup>Not fully tested. Version 1.03. Needs patches.zip (search for PATCHES REQUIRED on this readme)</sub> | - | - |
-| Grand Theft Auto Liberty City Stories (USA) | SLUS-21423 | Great | <sup>Needs patches.zip (search for PATCHES REQUIRED on this readme)</sub> | - | - |
-| Grand Theft Auto Vice City Stories (USA) | SLUS-21590 | Great | <sup>Needs patches.zip (search for PATCHES REQUIRED on this readme)</sub> | - | - |
+| Grand Theft Auto III (USA) | SLUS-20062 | Great | <sup> Camera control via gamepad available* Issues? see [this](https://github.com/regilopes/MouseInjectorDolphinDuck#gamepad-right-stick-fix-instructions) </br> Needs 'Mouse Injector Fixes' patch enabled on PCSX2 </sub> | - | <sup>Needs updated patches.zip (search for PATCHES REQUIRED on this readme)</sub> |
+| Grand Theft Auto Vice City (USA) | SLUS-20552 | Great | <sup> Camera control via gamepad available* Issues? see [this](https://github.com/regilopes/MouseInjectorDolphinDuck#gamepad-right-stick-fix-instructions) </br> Needs 'Mouse Injector Fixes' patch enabled on PCSX2 </sub> | - | <sup>Needs updated patches.zip (search for PATCHES REQUIRED on this readme)</sub> |
+| Grand Theft Auto San Andreas (USA) | SLUS-20946 | Great | <sup>Needs 'Mouse Injector Fixes' patch enabled on PCSX2 - Version 1.03. </sub> | - | <sup>Needs updated patches.zip (search for PATCHES REQUIRED on this readme)</sub> |
+| Grand Theft Auto Liberty City Stories (USA) | SLUS-21423 | Great | <sup>Needs 'Mouse Injector Fixes' patch enabled on PCSX2 </sub> | - | <sup>Needs updated patches.zip (search for PATCHES REQUIRED on this readme)</sub> |
+| Grand Theft Auto Vice City Stories (USA) | SLUS-21590 | Great | <sup>Needs 'Mouse Injector Fixes' patch enabled on PCSX2 </sub> | - | <sup>Needs updated patches.zip (search for PATCHES REQUIRED on this readme)</sub> |
 | Ghost in the Shell: Stand Alone Complex (USA) | SLUS-21006 | Fair | <sup>Horizontal camera while climbing not clamped</sub> | - | - |
 | Global Defence Force (PAL) / Chikyū Bōeigun 2 (Japan) | SLES-54464, SLPM-62652 | Good | <sup>Vehicle mouse control is experimental</br>Not fully tested</sub> | <sup>Control Type: Technical</sub> | - |
 | Gunslinger Girl Vol. 1 (Japan)| SLPS-25343 | Fair | <sup>Not fully tested</sub> | - | - |
