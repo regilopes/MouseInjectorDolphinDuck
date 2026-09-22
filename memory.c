@@ -467,6 +467,7 @@ uint8_t MEM_FindRamOffset(void)
 			if (strstr(retroArchTitle, "Mupen") != NULL) {
 				strcpy(hookedEmulatorName, "RetroArch Mupen64Plus-Next");
 				emuRegionSize = 0x20011000; // Mupen64Plus core
+				//emuRegionSize = 0x200110000; // Mupen64Plus core
 				isN64handle = 1;
 				isMupenhandle = 1;
 			}
@@ -514,6 +515,7 @@ uint8_t MEM_FindRamOffset(void)
 		}*/ else if (isN64handle == 1) {
 			if (isMupenhandle)
 				emuRegionSize = 0x20011000; // RetroArch(Mupen64Plus core)/simple64/RMG
+				//emuRegionSize = 0x200110000; // RetroArch(Mupen64Plus core)/simple64/RMG
 			else
 				emuRegionSize = 0x22D0000; 	// BizHawk 2.8 (Mupen64Plus)
 		} else if (isBSNEShandle == 1) {

@@ -36,6 +36,7 @@
 #define K_CTRL0 (GetAsyncKeyState(0x11) && GetAsyncKeyState(0x30) || GetAsyncKeyState(0x30) && GetAsyncKeyState(0x11)) // key combo control + '0'
 #define K_CTRL1 (GetAsyncKeyState(0x11) && GetAsyncKeyState(0x31) || GetAsyncKeyState(0x31) && GetAsyncKeyState(0x11)) // key combo control + '1'
 #define K_CTRL4 (GetAsyncKeyState(0x11) && GetAsyncKeyState(0x34) || GetAsyncKeyState(0x34) && GetAsyncKeyState(0x11)) // key combo control + '4'
+#define K_CTRL9 (GetAsyncKeyState(0x11) && GetAsyncKeyState(0x39) || GetAsyncKeyState(0x39) && GetAsyncKeyState(0x11)) // key combo control + '9'
 #define K_PLUS (GetAsyncKeyState(0x6B) || GetAsyncKeyState(0xBB)) // key '+'
 #define K_MINUS (GetAsyncKeyState(0x6D) || GetAsyncKeyState(0xBD)) // key '-'
 #define K_INSERT GetAsyncKeyState(0x2D) // key 'Insert'

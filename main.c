@@ -248,7 +248,7 @@ static void GUI_Interact(void)
 		updateinterface = 1;
 	}
 	
-	if(K_9 && !updateinterface) // mouse cursor toggle (9)
+	if(K_CTRL9 && !updateinterface) // mouse cursor toggle (9)
 	{
 		MOUSE_Lock();
 		cursorlocktoggle = !cursorlocktoggle;
@@ -315,14 +315,14 @@ static void GUI_Update(void)
 		if (GAME_OptionSupported())
 			printf("   [8] - %s\n\n", GAME_OptionMessage());
 
-		printf(cursorlocktoggle ? "   [9] - [ON] Lock Mouse Cursor\n\n" : "   [9] - [OFF] Lock Mouse Cursor\n\n");
+		printf(cursorlocktoggle ? "   [CTRL+9] - [ON] Lock Mouse Cursor\n\n" : "   [CTRL+9] - [OFF] Lock Mouse Cursor\n\n");
 		printf("\n\n\n");
 		printf("   [CTRL+0] - Lock Settings\n\n");
 	}
 	else
 	{
 		printf("\n\n\n\n\n\n\n");
-		printf(cursorlocktoggle ? "   [9] - [ON] Lock Mouse Cursor\n\n" : "   [9] - [OFF] Lock Mouse Cursor\n\n");
+		printf(cursorlocktoggle ? "   [CTRL+9] - [ON] Lock Mouse Cursor\n\n" : "   [CTRL+9] - [OFF] Lock Mouse Cursor\n\n");
 		printf("   [CTRL+0] - Unlock Settings\n\n");
 	}
 	if(mousetoggle || locksettings)
@@ -466,3 +466,21 @@ void AccumulateAddRemainder(float *value, float *accumulator, float dir, float d
 	// add remainder to accumlation
 	*accumulator = fmod(r + *accumulator, 1.f);
 }
+
+
+//Gemini suggested rewrite of AccumulateAddRemainder to avoid issues
+// void AccumulateAddRemainder(float *value, float *accumulator, float dir, float dx) {
+//     if (dir == 0.0f || dx == 0.0f) return;
+
+//     // 1. Add all of the current movement to the existing accumulator
+//     *accumulator += dx;
+
+//     // 2. Extract the integer part of the accumulator (move towards zero)
+//     float integer_part = truncf(*accumulator);
+
+//     // 3. Apply the integer part to the final value
+//     *value += integer_part;
+
+//     // 4. Keep only the fractional part in the accumulator
+//     *accumulator -= integer_part;
+// }
