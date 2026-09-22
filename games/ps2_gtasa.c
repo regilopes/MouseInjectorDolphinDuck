@@ -145,12 +145,12 @@ static void PS2_SA_Inject(void)
 
 	//while aiming, needed to transition from aim lock to manual aiming when moving outside the current target
 	if(aimlock_state == 255){ 
-		if (xmouse > 5){
+		if (xmouse > 5 || ymouse < -5){
 			PS2_MEM_WriteUInt8(0x700944, 255);
 			PS2_MEM_WriteUInt8(0x7009C4, 255);
 		}
 	
-		if (xmouse < -5){
+		if (xmouse < -5 || ymouse > 5){
 			PS2_MEM_WriteUInt8(0x700944, 0);
 			PS2_MEM_WriteUInt8(0x7009C4, 0);
 		}

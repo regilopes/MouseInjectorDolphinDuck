@@ -24,15 +24,17 @@
 #include "game.h"
 
 // TODO:
-// auto ready weapon when aiming
+// auto ADS weapon when aiming
 
-// cam and aim pointer (viewBase)
-#define MGS3_CAMBASE 0x0020CF18 //(viewbase)
-#define MGS3_AIMBASE 0x0020CF18	   // aim base (viewbase)
+// cam and aim pointer
+#define MGS3_CAMBASE 0x0020CF18 //
+#define MGS3_CAMBASE_SANITY_1 -0xD4 //offset from cambase
+#define MGS3_CAMBASE_SANITY_1_VALUE 0xFDFF7F3F
+#define MGS3_AIMBASE 0x0020CF18	   
 #define MGS3_CUTSCNBASE 0x00213670 // cutscene cam base
 
 // States
-#define MGS3_FPCAMSTATE 0x001D744C // 2.0 FPV or TPV
+#define MGS3_SNAKESTATE 0x001D744C //standing, crouching, prone, aiming, swiming, etc.
 #define MGS3_VIEWSTATE 0x0020CF9F  // FPV or TPV
 #define MGS3_GAMESTATE 0x0024EC8B // loading new area or not
 #define MGS3_CUTSCNSTATE 0x50	  // is FP on cutscene or not (offset from cutscnebase)
@@ -53,6 +55,7 @@
 #define MGS3_FOV 0x0020CF9C
 
 static uint8_t PS2_MGS3_Status(void);
+static uint8_t PS2_MGS3_DetectCambase(void);
 static void PS2_MGS3_Inject(void);
 
 static const GAMEDRIVER GAMEDRIVER_INTERFACE =
@@ -70,10 +73,13 @@ static uint32_t camBase = 0;
 static uint32_t aimBase = 0;
 static uint32_t cutscnBase = 0;
 static uint8_t cutscnState = 0;
-static uint8_t fpcamState = 0;
+static uint8_t snakeState = 0;
 static uint8_t gameState = 0;
+static uint8_t areaLoading = 0;
 static float xAccumulator = 0.f;
 static float yAccumulator = 0.f;
+int flag = 0;
+int flag2 = 0;
 
 
 //==========================================================================
@@ -88,6 +94,34 @@ static uint8_t PS2_MGS3_Status(void)
 			PS2_MEM_ReadWord(0x93398) == 0x2E35393B);
 }
 
+static uint8_t PS2_MGS3_DetectCambase(void)
+{
+	uint32_t tempCamBase = PS2_MEM_ReadPointer(MGS3_CAMBASE);
+	// printf("tempCamBase: %X\n", tempCamBase);
+	// printf("sanity value: %X\n", PS2_MEM_ReadUInt(tempCamBase + MGS3_CAMBASE_SANITY_1));
+	if (tempCamBase != 0)
+	{
+		if (PS2_MEM_ReadWord(tempCamBase + MGS3_CAMBASE_SANITY_1) == MGS3_CAMBASE_SANITY_1_VALUE)
+		{
+			camBase = tempCamBase;
+			//printf("camBase: %X\n", camBase);
+			return 1;
+		}
+		if (PS2_MEM_ReadWord(tempCamBase + MGS3_CAMBASE_SANITY_1) == 0x20000000)
+		{
+			aimBase = tempCamBase;
+			//printf("aimBase: %X\n", aimBase);
+			return 1;
+		}
+		if (PS2_MEM_ReadUInt8(cutscnBase + MGS3_CUTSCNSTATE) == 1) // if in cutscene first person
+		{
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 //==========================================================================
 // Purpose: calculate mouse look and inject into current game
 //==========================================================================
@@ -97,15 +131,70 @@ static void PS2_MGS3_Inject(void)
 	// if(xmouse == 0 && ymouse == 0) // if mouse is idle
 	//    	return;
 
-	gameState = PS2_MEM_ReadUInt8(MGS3_GAMESTATE);
-	if (gameState != 0x01 && gameState != 0x11) // if isn't 'ingame' and 'cutscene'
+	if (!PS2_MGS3_DetectCambase())
 		return;
 
-	camBase = PS2_MEM_ReadPointer(MGS3_CAMBASE);
-	aimBase = PS2_MEM_ReadPointer(MGS3_AIMBASE);
-	cutscnBase = PS2_MEM_ReadPointer(MGS3_CUTSCNBASE);
+	gameState = PS2_MEM_ReadUInt8(MGS3_GAMESTATE); //in-game, codec screen, pause menu, cutscene, etc.
+	areaLoading = PS2_MEM_ReadUInt8(0x24EC8D); // In transition to a new area (loading screen) or not
+	// if (gameState != 0x01 && gameState != 0x11) // if isn't 'ingame' and 'cutscene'
+	if ((gameState & (0 << 0))) //not in-game
+	 	return;
+
+	if ((gameState & (1 << 1))) // in codec screen
+	 	return;
+
+	if ((gameState & (1 << 2))) // in pause menu
+	 	return;
+
+	if ((gameState & (1 << 7))) // in game over screen
+	 	return;
+
+	if ((areaLoading & (1 << 1)) && (gameState & (1 << 3))){ // if loading new area
+		// flag = 0;
+		// flag2 = 0;
+		// camBase = 0;
+		// aimBase = 0;
+		
+		//printf("loading new area\n");
+		return;
+	}
+
+
+	//if(areaLoading == 0){ // if loading new area (bit 1 == 0))
+	
+	// if((snakeState & (1 << 7))){ // in first person view (bit 7 == 1) 
+	// 	if(flag == 0){ //necessary to get the pointers only once per map section, otherwise it will crash the game occasionally when changing view modes.
+	// 			aimBase = PS2_MEM_ReadPointer(MGS3_AIMBASE);
+	// 			flag = 1;
+	// 			//}
+			
+
+	// 	}
+	// }else{
+
+		
+	// 		if(flag2 == 0){ //necessary to get the pointers only once per map section, otherwise it will crash the game occasionally when changing view modes.
+	
+				//camBase = PS2_MEM_ReadPointer(MGS3_CAMBASE);
+				//flag2 = 1;
+	// 		}
+	// 	}
+	// }
+
+	// printf("FlagAim: %i\n", flag);
+	// printf("FlagCam: %i\n", flag2);
+	// printf("camBase: %X\n", camBase);
+	// printf("aimBase: %X\n", aimBase);
+	// printf("areaload: %X\n", areaLoading);
+
+	//cutscnBase = PS2_MEM_ReadPointer(MGS3_CUTSCNBASE);
+
+
 	cutscnState = PS2_MEM_ReadUInt8(cutscnBase + MGS3_CUTSCNSTATE);
-	fpcamState = PS2_MEM_ReadUInt8(MGS3_FPCAMSTATE);
+	cutscnBase = PS2_MEM_ReadPointer(MGS3_CUTSCNBASE);
+	//printf("cutscnBase: %X\n", cutscnBase);
+
+	snakeState = PS2_MEM_ReadUInt8(MGS3_SNAKESTATE);
 
 
 	float fov = PS2_MEM_ReadFloat(MGS3_FOV);
@@ -140,22 +229,27 @@ static void PS2_MGS3_Inject(void)
 	int32_t cutX = PS2_MEM_ReadInt(cutscnBase + MGS3_CUTSCNX);
 	
 		
-	// //update cutscene
+	//update cutscene
 	cutY += (int16_t)((!invertpitch ? ymouse : -ymouse) * looksensitivity / 2);
 	cutX += (int16_t)(xmouse * looksensitivity / 2);
 
-	
-	if (cutscnState){
+
+	//printf("cutscene state: %i", cutscnState);
+	if ((gameState & (1 << 4))){ // in cutscene
+		if (cutscnState){
 		PS2_MEM_WriteInt(cutscnBase + MGS3_CUTSCNY, cutY);
 		PS2_MEM_WriteInt(cutscnBase + MGS3_CUTSCNX, cutX);
+		}
 	}
+	
 
- 	
-	if(HalfByteComp(fpcamState, 0x8)||
-	   HalfByteComp(fpcamState, 0x9)){ // checking if first nibble = 8 or 9
+	
+	if((snakeState & (1 << 7))) // in first person view (bit 7 == 1)
+	{ 
 		PS2_MEM_WriteInt16(aimBase + MGS3_AIMY, (int16_t)aimYf);
 		PS2_MEM_WriteInt16(aimBase + MGS3_AIMX, (int16_t)aimXf);
-	}else if(fpcamState != 0){ //cutscene freeze fix
+	}else if((gameState != 0x11 && gameState != 0x10 && gameState != 0x09))// Not in cutscene	
+	{ 
 		PS2_MEM_WriteFloat(camBase + MGS3_CAMY, camY);
 		PS2_MEM_WriteInt16(camBase + MGS3_CAMX, camX);
 	}

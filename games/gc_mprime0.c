@@ -42,6 +42,10 @@
 //#define MPRIME0_AIMY 0x808BB154 //aimY alternative
 //#define MPRIME0_AIMY 0x808AE774 //aimY alternative deprec
 
+#define MPRIME0_FOV_POINTER 0x8045C630
+
+#define MPRIME0_FOV 0x15C
+
 
 
 static uint8_t GC_MPRIME0_Status(void);
@@ -75,6 +79,13 @@ static uint8_t GC_MPRIME0_Status(void)
 //==========================================================================
 // Purpose: calculate mouse look and inject into current game
 //==========================================================================
+uint32_t fovpointer = 0;
+
+uint32_t pointertopointerplayerstate = 0;
+uint32_t pointerplayerstate = 0;
+uint32_t pointerscantimes = 0;
+uint32_t creature = 0;
+
 static void GC_MPRIME0_Inject(void)
 {
 	// if(xmouse == 0 && ymouse == 0 && rx == 0 && ry == 0) // if mouse is idle
@@ -84,8 +95,32 @@ static void GC_MPRIME0_Inject(void)
 	if(MEM_ReadUInt(0x8046BC70) || MEM_ReadUInt(0x8045B138))
 		return;
 
+	fovpointer = MEM_ReadInt(MPRIME0_FOV_POINTER);
 
-		
+
+	pointertopointerplayerstate = MEM_ReadUInt(0x8045AA60);
+	pointerplayerstate = MEM_ReadUInt(pointertopointerplayerstate);
+	pointerscantimes = MEM_ReadUInt(pointerplayerstate + 0x17C);
+	creature = MEM_ReadUInt(pointerscantimes + 0x294);
+
+	//  MEM_WriteInt(pointerscantimes + 0x294, 0x3F800000); 
+	//  MEM_WriteInt(pointerscantimes + 0x8C4, 0x3F800000);
+	//  MEM_WriteInt(pointerscantimes + 0x106C, 0x3F800000);
+
+	//MEM_WriteInt(pointerplayerstate + 0x180, 109);
+
+
+	// printf("current logbook: %i\n", MEM_ReadUInt(pointerplayerstate + 0x180));
+
+	// printf("total logbook: %i\n", MEM_ReadUInt(pointerplayerstate + 0x184));
+	
+
+
+	float fov = MEM_ReadFloat(fovpointer + MPRIME0_FOV);
+
+	//printf("fov: %f\n", fov);
+
+	//printf("fovpointer: %08X\n", fovpointer);
 
 	float looksensitivity = (float)sensitivity;
 	
@@ -128,6 +163,8 @@ static void GC_MPRIME0_Inject(void)
 	
 	aimY = ClampFloat(aimY, -1.42f, 1.42f);
 	MEM_WriteFloat(MPRIME0_AIMY, aimY);
+
+	MEM_WriteFloat(fovpointer + MPRIME0_FOV, 80.f);
 	
 
 	//Code below belongs to PrimeHack project, it modernize several aspects of the gameplay movement controls.

@@ -88,12 +88,12 @@ static void PS2_MGS2_Inject(void)
 	// if(xmouse == 0 && ymouse == 0) // if mouse is idle
 	//    	return;
 
-	if (PS2_MEM_ReadUInt8(0x00193278) == 0x0 && //FP mode OFF
-	    PS2_MEM_ReadUInt8(MGS2_LOADINGSTATE) == 0x7F)  //playing state (not loading)
-			PS2_MEM_WriteUInt8(0x00193278, 0x1); //FP mode ON
+	// if (PS2_MEM_ReadUInt8(0x00193278) == 0x0 && //FP mode OFF
+	//     PS2_MEM_ReadUInt8(MGS2_LOADINGSTATE) == 0x7F)  //playing state (not loading)
+	// 		PS2_MEM_WriteUInt8(0x00193278, 0x1); //FP mode ON
 	
-	if (PS2_MEM_ReadUInt8(MGS2_LOADINGSTATE) == 0x80) //loading
-		PS2_MEM_WriteUInt8(0x00193278, 0x0);
+	// if (PS2_MEM_ReadUInt8(MGS2_LOADINGSTATE) == 0x80) //loading
+	// 	PS2_MEM_WriteUInt8(0x00193278, 0x0);
 	
 
 	// gameState = PS2_MEM_ReadUInt8(MGS2_GAMESTATE);
@@ -126,8 +126,10 @@ static void PS2_MGS2_Inject(void)
 	//update aim
 	float ym = (float)(invertpitch ? -ymouse : ymouse);
 	float dy = ym * looksensitivity / fov / 40.f;
+	//float dy = ym * looksensitivity / 40.f;
 	AccumulateAddRemainder(&aimYf, &yAccumulator, ym, dy);
 	float dx = (float)-xmouse * looksensitivity / fov / 30.f;
+	//float dx = (float)-xmouse * looksensitivity / 30.f;
 	AccumulateAddRemainder(&aimXf, &xAccumulator, (float)xmouse, dx);
 
 
@@ -141,10 +143,10 @@ static void PS2_MGS2_Inject(void)
 
 
 	// //update cam
-	// aimY += (int16_t)(!invertpitch ? ymouse : -ymouse) / 2;
+	aimY += (int16_t)(!invertpitch ? ymouse : -ymouse) * looksensitivity / fov / 40.f;
 	// aimX += (int16_t)-xmouse / 2;
 	// aimY2 += (int16_t)(!invertpitch ? ymouse : -ymouse) / 2;
-	// aimX2 += (int16_t)-xmouse / 2;
+	aimX2 += (int16_t)-xmouse * looksensitivity / fov / 6.f;
  	
 
 	PS2_MEM_WriteInt16(MGS2_AIMY, (int16_t)aimYf);
@@ -152,8 +154,12 @@ static void PS2_MGS2_Inject(void)
 	//PS2_MEM_WriteInt16(aimBase + MGS2_AIMY2, (int16_t)aimYf2);
 	PS2_MEM_WriteInt16(aimBase + MGS2_AIMX2, (int16_t)aimXf2);
 
-	// PS2_MEM_WriteInt16(MGS2_AIMY, (int16_t)aimY);
+	//PS2_MEM_WriteInt16(MGS2_AIMY, (int16_t)aimY);
 	// PS2_MEM_WriteInt16(aimBase + MGS2_AIMX, (int16_t)aimX);
 	// PS2_MEM_WriteInt16(aimBase + MGS2_AIMY2, (int16_t)aimY2);
-	// PS2_MEM_WriteInt16(aimBase + MGS2_AIMX2, (int16_t)aimX2);
+	//PS2_MEM_WriteInt16(aimBase + MGS2_AIMX2, (int16_t)aimX2);
+
+	printf("aimY: %i\n", (int16_t)aimYf);
+	//printf("aimX2: %i\n", (int16_t)aimXf2);
+	//printf("aimX2: %i\n", PS2_MEM_ReadInt16(aimBase + MGS2_AIMX2));
 }

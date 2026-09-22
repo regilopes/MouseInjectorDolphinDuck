@@ -74,26 +74,26 @@ static void PS2_GTA3_Inject(void)
 	 	return;
 	
 
-	// //disabling camX spring
-	if (PS2_MEM_ReadUInt(0x2632F8) == 0xE6A000D8)
-		PS2_MEM_WriteUInt(0x002632F8, 0x00000000);
+	// // //disabling camX spring
+	// if (PS2_MEM_ReadUInt(0x2632F8) == 0xE6A000D8)
+	// 	PS2_MEM_WriteUInt(0x002632F8, 0x00000000);
 
-	if (PS2_MEM_ReadUInt(0x00262474) == 0xE6A000D8)
-		PS2_MEM_WriteUInt(0x00262474, 0x00000000);
+	// if (PS2_MEM_ReadUInt(0x00262474) == 0xE6A000D8)
+	// 	PS2_MEM_WriteUInt(0x00262474, 0x00000000);
 
-	//CPad::ForceCameraBehindPlayer(void) STUB
-	if (PS2_MEM_ReadUInt(0x0027F900) == 0x9082005D){
-	 	PS2_MEM_WriteUInt(0x0027F900, 0x03E00008);
-	 	PS2_MEM_WriteUInt(0x0027F904, 0x00000000);
-	}
+	// //CPad::ForceCameraBehindPlayer(void) STUB
+	// if (PS2_MEM_ReadUInt(0x0027F900) == 0x9082005D){
+	//  	PS2_MEM_WriteUInt(0x0027F900, 0x03E00008);
+	//  	PS2_MEM_WriteUInt(0x0027F904, 0x00000000);
+	// }
 
-	//disabling camY spring
-	if (PS2_MEM_ReadUInt(0x00247588) == 0xE4800000)
-	  	PS2_MEM_WriteUInt(0x00247588, 0x00000000);
+	// //disabling camY spring
+	// if (PS2_MEM_ReadUInt(0x00247588) == 0xE4800000)
+	//   	PS2_MEM_WriteUInt(0x00247588, 0x00000000);
 
-	//fixing cam wall colision twitching
-	if (PS2_MEM_ReadUInt(0x00262830) == 0xE6A000D8)
-	PS2_MEM_WriteUInt(0x00262830, 0x00000000);
+	// //fixing cam wall colision twitching
+	// if (PS2_MEM_ReadUInt(0x00262830) == 0xE6A000D8)
+	// PS2_MEM_WriteUInt(0x00262830, 0x00000000);
 
 
 	float looksensitivity = (float)sensitivity;
@@ -114,22 +114,22 @@ static void PS2_GTA3_Inject(void)
 	bodyAngle -= (float)xmouse * looksensitivity * zoom / 1000000.f;
 	
 
-	fpcamY -= (float)((invertpitch ? -ymouse : ymouse) * looksensitivity * zoom / 1000000.f + ry/327680000.f * zoom);
+	fpcamY -= (float)((invertpitch ? -ymouse : ymouse) * looksensitivity * zoom / 1000000.f + ry/327680000.f * ((zoom * zoom)/25.f));
 	fpcamY = ClampFloat(fpcamY, -1.562069654, 1.04719758);
 
-	fpcamX -= (float)(xmouse * looksensitivity * zoom / 1000000.f + rx/327680000.f * zoom);
+	fpcamX -= (float)(xmouse * looksensitivity * zoom / 1000000.f + rx/327680000.f * ((zoom * zoom)/25.f));
 
 
 
-	fpcamY2 -= (float)((invertpitch ? -ymouse : ymouse) * looksensitivity * zoom2 / 1000000.f + ry/327680000.f * zoom2);
+	fpcamY2 -= (float)((invertpitch ? -ymouse : ymouse) * looksensitivity * zoom2 / 1000000.f + ry/327680000.f * ((zoom2 * zoom2)/25.f));
 	fpcamY2 = ClampFloat(fpcamY, -1.562069654, 1.04719758);
 
-	fpcamX2 -= (float)(xmouse * looksensitivity * zoom2 / 1000000.f + rx/327680000.f * zoom2);
+	fpcamX2 -= (float)(xmouse * looksensitivity * zoom2 / 1000000.f + rx/327680000.f * ((zoom2 * zoom2)/25.f));
 
 
 	
 
-	camY += (float)(invertpitch ? -ymouse : ymouse) * looksensitivity /  6000.f + ry/1638400.f;
+	camY += (float)(invertpitch ? -ymouse : ymouse) * looksensitivity /  6000.f + ry/1638400.f * 3.f;
 	
 
 

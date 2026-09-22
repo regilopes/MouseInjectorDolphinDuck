@@ -72,7 +72,11 @@ static uint8_t PS2_XIII_Status(void)
 			
 			(PS2_MEM_ReadWord(0x155D0) == 0x534C5553&&
 			PS2_MEM_ReadWord(0x155D4) == 0x5F323036&&
-			PS2_MEM_ReadWord(0x155D8) == 0x2E37373B));
+			PS2_MEM_ReadWord(0x155D8) == 0x2E37373B)||
+		
+			(PS2_MEM_ReadWord(0x15B90) == 0x534C5553&&
+			PS2_MEM_ReadWord(0x15B94) == 0x5F323036&&
+			PS2_MEM_ReadWord(0x15B98) == 0x2E37373B));
 			  
 }
 

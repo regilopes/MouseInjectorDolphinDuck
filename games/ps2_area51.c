@@ -25,11 +25,20 @@
 
 #define TAU 6.2831853f // 0x40C90FDB
 
-// #define A51_CAMBASE 0x5754AC
-#define A51_CAMBASE 0x4F0000 // requires supplied cheat file
+//#define A51_CAMBASE 0x5754AC
+//#define A51_CAMBASE 0x5769EC
+#define A51_CAMBASE 0x4F0000 // requires supplied patch file
+//#define A51_CAMBASE 0x0001AB88
+
 // offsets from camBase
+// #define A51_CAMY 0x00FCA8F8
+// #define A51_CAMX 0x00FCA8FC
 #define A51_CAMY 0x538
 #define A51_CAMX 0x53C
+
+
+
+
 #define A51_FOV 0x5F0
 
 #define A51_IS_PAUSED 0x4F03A8
@@ -48,6 +57,8 @@ static const GAMEDRIVER GAMEDRIVER_INTERFACE =
 
 const GAMEDRIVER *GAME_PS2_AREA51 = &GAMEDRIVER_INTERFACE;
 
+static uint32_t camBase = 0;
+
 //==========================================================================
 // Purpose: return 1 if game is detected
 //==========================================================================
@@ -58,6 +69,8 @@ static uint8_t PS2_A51_Status(void)
 			PS2_MEM_ReadWord(0x00093394) == 0x5F323035U &&
 			PS2_MEM_ReadWord(0x00093398) == 0x2E39353BU);
 }
+
+
 //==========================================================================
 // Purpose: calculate mouse look and inject into current game
 //==========================================================================
@@ -74,20 +87,23 @@ static void PS2_A51_Inject(void)
 	if(xmouse == 0 && ymouse == 0) // if mouse is idle
 		return;
 	
-	if (PS2_MEM_ReadUInt(A51_IS_PAUSED))
-		return;
+	// if (PS2_MEM_ReadUInt(A51_IS_PAUSED))
+	// 	return;
 	
-	uint32_t camBase = PS2_MEM_ReadPointer(A51_CAMBASE);
+	camBase = PS2_MEM_ReadPointer(A51_CAMBASE);
 
-	if (!camBase)
-		return;
+	// if (!camBase)
+	// 	return;
 
 	float looksensitivity = (float)sensitivity / 40.f;
-	float scale = 300.f;
+	float scale = 600.f;
 	float fov = PS2_MEM_ReadFloat(camBase + A51_FOV) / 1.04719758f;
 
+ 	float camY = PS2_MEM_ReadFloat(camBase + A51_CAMY);
 	float camX = PS2_MEM_ReadFloat(camBase + A51_CAMX);
-	float camY = PS2_MEM_ReadFloat(camBase + A51_CAMY);
+
+	// float camY = PS2_MEM_ReadFloat(0xFC95B8);
+	// float camX = PS2_MEM_ReadFloat(0xFC95BC);
 
 	camX -= xmouse * looksensitivity / scale * fov;
 	// while (camX > TAU)
@@ -98,7 +114,10 @@ static void PS2_A51_Inject(void)
 	camY += (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale * fov;
 	camY = ClampFloat(camY, -1.518436432f, 1.518436432f);
 
-	PS2_MEM_WriteFloat(camBase + A51_CAMX, (float)camX);
 	PS2_MEM_WriteFloat(camBase + A51_CAMY, (float)camY);
+	PS2_MEM_WriteFloat(camBase + A51_CAMX, (float)camX);
+
+	// PS2_MEM_WriteFloat(0xFC95B8, (float)camY);
+	// PS2_MEM_WriteFloat(0xFC95BC, (float)camX);
 
 }
