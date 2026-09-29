@@ -150,44 +150,8 @@ static void PS2_MGS3_Inject(void)
 	 	return;
 
 	if ((areaLoading & (1 << 1)) && (gameState & (1 << 3))){ // if loading new area
-		// flag = 0;
-		// flag2 = 0;
-		// camBase = 0;
-		// aimBase = 0;
-		
-		//printf("loading new area\n");
 		return;
 	}
-
-
-	//if(areaLoading == 0){ // if loading new area (bit 1 == 0))
-	
-	// if((snakeState & (1 << 7))){ // in first person view (bit 7 == 1) 
-	// 	if(flag == 0){ //necessary to get the pointers only once per map section, otherwise it will crash the game occasionally when changing view modes.
-	// 			aimBase = PS2_MEM_ReadPointer(MGS3_AIMBASE);
-	// 			flag = 1;
-	// 			//}
-			
-
-	// 	}
-	// }else{
-
-		
-	// 		if(flag2 == 0){ //necessary to get the pointers only once per map section, otherwise it will crash the game occasionally when changing view modes.
-	
-				//camBase = PS2_MEM_ReadPointer(MGS3_CAMBASE);
-				//flag2 = 1;
-	// 		}
-	// 	}
-	// }
-
-	// printf("FlagAim: %i\n", flag);
-	// printf("FlagCam: %i\n", flag2);
-	// printf("camBase: %X\n", camBase);
-	// printf("aimBase: %X\n", aimBase);
-	// printf("areaload: %X\n", areaLoading);
-
-	//cutscnBase = PS2_MEM_ReadPointer(MGS3_CUTSCNBASE);
 
 
 	cutscnState = PS2_MEM_ReadUInt8(cutscnBase + MGS3_CUTSCNSTATE);

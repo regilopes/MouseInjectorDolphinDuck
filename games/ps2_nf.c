@@ -45,6 +45,7 @@
 #define PS2_NF_sentrybase 0x333690 // sentry interface pointer (heli/jet ski)
 #define PS2_NF_sentryfov 0x3341C4 // sentry fov
 #define PS2_NF_pauseflag 0x2A4980
+#define PS2_NF_mapID 0x2a3774 // map ID (0700001B = Equinox (space mission))
 
 static uint8_t PS2_NF_Status(void);
 static void PS2_NF_Inject(void);
@@ -75,6 +76,80 @@ static uint8_t PS2_NF_Status(void)
 			PS2_MEM_ReadWord(0x9070C) == 0x5F323035 &&
 			PS2_MEM_ReadWord(0x90710) == 0x2E37393B));
 }
+
+static const unsigned int MATRIX_ADDRESSES[9] = {
+	0x01C2E340, 0x01C2E344, 0x01C2E348,  // Vector 1
+	0x01C2E350, 0x01C2E354, 0x01C2E358,  // Vector 2
+	0x01C2E360, 0x01C2E364, 0x01C2E368,   //Vector 3
+};
+
+void NormalizeVector(float* m, int start_index) {
+   		
+	float x = m[start_index];
+	float y = m[start_index + 1];
+	float z = m[start_index + 2];
+    
+	float magnitude = sqrtf((x * x) + (y * y) + (z * z));
+    
+	if (magnitude > 0.0f) {
+   		m[start_index]     /= magnitude;
+   		m[start_index + 1] /= magnitude;
+   		m[start_index + 2] /= magnitude;
+	}
+}
+
+void EquinoxCam(float deltaMouseX, float deltaMouseY) {
+    float m[9];
+    float sensitivity = 0.001f; // Change to adjust the mouse speed
+
+    // 1. Read the values from memory using the mapped and corrected addresses
+    for (int i = 0; i < 9; i++) {
+        m[i] = PS2_MEM_ReadFloat(MATRIX_ADDRESSES[i]);
+    }
+
+    // 2. Convert mouse movement to angles (in radians)
+	
+    float angleX = (float)xmouse * sensitivity;
+    float angleY = (float)ymouse * sensitivity;
+
+    // 3. Apply horizontal rotation (Yaw)
+    // Interacts with Vector 1 (indexes 0,1,2) and Vector 3 (indexes 6,7,8)
+    float cosX = cosf(angleX);
+    float sinX = -sinf(angleX);
+    for (int i = 0; i < 3; i++) {
+        float old_r = m[i];     
+        float old_f = m[6 + i]; 
+        
+        m[i]     = (old_r * cosX) - (old_f * sinX);
+        m[6 + i] = (old_r * sinX) + (old_f * cosX);
+    }
+
+    // 4. Apply vertical rotation (Pitch)
+    // Interacts with Vector 2 (indexes 3,4,5) and Vector 3 (indexes 6,7,8)
+    float cosY = cosf(angleY);
+    float sinY = sinf(angleY);
+    for (int i = 0; i < 3; i++) {
+        float old_u = m[3 + i]; 
+        float old_f = m[6 + i]; 
+        
+        m[3 + i] = (old_u * cosY) + (old_f * sinY);
+        m[6 + i] = (-old_u * sinY) + (old_f * cosY);
+    }
+
+    // 5. Ortogonalization to keep stability (avoid screen shaking)
+    // NormalizeVector(m, 0); // Normalizes Block 1
+    // NormalizeVector(m, 3); // Normalizes Block 2
+    // NormalizeVector(m, 6); // Normalizes Block 3
+
+    // 6. Write new values back to memory
+    for (int i = 0; i < 9; i++) {
+        PS2_MEM_WriteFloat(MATRIX_ADDRESSES[i], m[i]);
+    }
+
+}
+
+
+
 //==========================================================================
 // Purpose: calculate mouse look and inject into current game
 //==========================================================================
@@ -85,57 +160,65 @@ static void PS2_NF_Inject(void)
 	const uint32_t playerbase = PS2_MEM_ReadUInt(PS2_NF_playerbase);
 	const float looksensitivity = (float)sensitivity / 40.f;
 	const float crosshairsensitivity = ((float)crosshair / 100.f) * looksensitivity;
-	if(PS2WITHINMEMRANGE(playerbase)) // if playerbase is valid
-	{
-		if(PS2_MEM_ReadUInt(playerbase + PS2_NF_lookspring) == 0x02000103) // disable lookspring when spawned
-			PS2_MEM_WriteUInt(playerbase + PS2_NF_lookspring, 0x02000101);
-		float camx = PS2_MEM_ReadFloat(playerbase + PS2_NF_camx);
-		float camy = PS2_MEM_ReadFloat(playerbase + PS2_NF_camy);
-		const float fov = PS2_MEM_ReadFloat(playerbase + PS2_NF_fov);
-		const float hp = PS2_MEM_ReadFloat(playerbase + PS2_NF_health);
-		const uint32_t pauseflag = PS2_MEM_ReadUInt(PS2_NF_pauseflag);
-		if(camx >= -PI && camx <= PI && camy >= -1.f && camy <= 1.f && fov >= 1.f && hp > 0 && !pauseflag)
-		{
-			camx -= (float)xmouse / 10.f * looksensitivity / (360.f / TAU) / (fov / 1.f); // normal calculation method for X
-			camy += (float)(!invertpitch ? -ymouse : ymouse) / 10.f * looksensitivity / 90.f / (fov / 1.f); // normal calculation method for Y
-			
-			while(camx <= -PI)
-				camx += TAU;
-			while(camx >= PI)
-				camx -= TAU;
-			camy = ClampFloat(camy, -1.f, 1.f);
-			PS2_MEM_WriteFloat(playerbase + PS2_NF_camx, camx);
-			PS2_MEM_WriteFloat(playerbase + PS2_NF_camy, camy);
-			if(crosshair) // if crosshair sway is enabled
-			{
-				float crosshairx = PS2_MEM_ReadFloat(playerbase + PS2_NF_crosshairx); // after camera x and y have been calculated and injected, calculate the crosshair/gun sway
-				float crosshairy = PS2_MEM_ReadFloat(playerbase + PS2_NF_crosshairy);
-				crosshairx += (float)xmouse / 80.f * crosshairsensitivity / (fov / 1.f);
-				crosshairy += (float)(!invertpitch ? -ymouse : ymouse) / 80.f * crosshairsensitivity / (fov / 1.f);
-				PS2_MEM_WriteFloat(playerbase + PS2_NF_crosshairx, ClampFloat(crosshairx, -CROSSHAIRX, CROSSHAIRX));
-				PS2_MEM_WriteFloat(playerbase + PS2_NF_crosshairy, ClampFloat(crosshairy, -CROSSHAIRY, CROSSHAIRY));
-			}
-		}
-	}
-	else // if playerbase is invalid, check for sentry mode
-	{
-		const uint32_t sentrybase = PS2_MEM_ReadUInt(PS2_NF_sentrybase);
-		if(PS2NOTWITHINMEMRANGE(sentrybase)) // if sentrybase is invalid
-			return;
-		float sentryx = PS2_MEM_ReadFloat(sentrybase + PS2_NF_sentryx);
-		float sentryy = PS2_MEM_ReadFloat(sentrybase + PS2_NF_sentryy);
-		const float fov = PS2_MEM_ReadFloat(PS2_NF_sentryfov);
-		if(sentryx >= -1.f && sentryx <= 1.f)
-		{
-			sentryx += (float)xmouse / 10.f * looksensitivity / 360.f / (SENTRYFOVBASE / fov);
-			sentryy += (float)(!invertpitch ? ymouse : -ymouse) / 10.f * looksensitivity / (90.f / (SENTRYMAXY - SENTRYMINY)) / (SENTRYFOVBASE / fov);
-			while(sentryx <= -1.f)
-				sentryx += 1.f;
-			while(sentryx >= 1.f)
-				sentryx -= 1.f;
-			sentryy = ClampFloat(sentryy, SENTRYMINY, SENTRYMAXY);
-			PS2_MEM_WriteFloat(sentrybase + PS2_NF_sentryx, sentryx);
-			PS2_MEM_WriteFloat(sentrybase + PS2_NF_sentryy, sentryy);
-		}
-	}
+
+    if (PS2_MEM_ReadUInt(PS2_NF_mapID) == 0x0700001B)
+    { // checks if is on the last mission (0700001B = Equinox (space mission))
+        EquinoxCam((float)-xmouse, (float)ymouse);
+    }else{
+        if (PS2WITHINMEMRANGE(playerbase)) // if playerbase is valid
+        {
+            if (PS2_MEM_ReadUInt(playerbase + PS2_NF_lookspring) == 0x02000103) // disable lookspring when spawned
+                PS2_MEM_WriteUInt(playerbase + PS2_NF_lookspring, 0x02000101);
+            float camx = PS2_MEM_ReadFloat(playerbase + PS2_NF_camx);
+            float camy = PS2_MEM_ReadFloat(playerbase + PS2_NF_camy);
+            const float fov = PS2_MEM_ReadFloat(playerbase + PS2_NF_fov);
+            const float hp = PS2_MEM_ReadFloat(playerbase + PS2_NF_health);
+            const uint32_t pauseflag = PS2_MEM_ReadUInt(PS2_NF_pauseflag);
+
+            if (camx >= -PI && camx <= PI && camy >= -1.f && camy <= 1.f && fov >= 1.f && hp > 0 && !pauseflag)
+            {
+                camx -= (float)xmouse / 10.f * looksensitivity / (360.f / TAU) / (fov / 1.f);                   // normal calculation method for X
+                camy += (float)(!invertpitch ? -ymouse : ymouse) / 10.f * looksensitivity / 90.f / (fov / 1.f); // normal calculation method for Y
+
+                while (camx <= -PI)
+                    camx += TAU;
+                while (camx >= PI)
+                    camx -= TAU;
+                camy = ClampFloat(camy, -1.f, 1.f);
+                PS2_MEM_WriteFloat(playerbase + PS2_NF_camx, camx);
+                PS2_MEM_WriteFloat(playerbase + PS2_NF_camy, camy);
+
+                if (crosshair) // if crosshair sway is enabled
+                {
+                    float crosshairx = PS2_MEM_ReadFloat(playerbase + PS2_NF_crosshairx); // after camera x and y have been calculated and injected, calculate the crosshair/gun sway
+                    float crosshairy = PS2_MEM_ReadFloat(playerbase + PS2_NF_crosshairy);
+                    crosshairx += (float)xmouse / 80.f * crosshairsensitivity / (fov / 1.f);
+                    crosshairy += (float)(!invertpitch ? -ymouse : ymouse) / 80.f * crosshairsensitivity / (fov / 1.f);
+                    PS2_MEM_WriteFloat(playerbase + PS2_NF_crosshairx, ClampFloat(crosshairx, -CROSSHAIRX, CROSSHAIRX));
+                    PS2_MEM_WriteFloat(playerbase + PS2_NF_crosshairy, ClampFloat(crosshairy, -CROSSHAIRY, CROSSHAIRY));
+                }
+            }
+        }
+        else // if playerbase is invalid, check for sentry mode
+        {
+            const uint32_t sentrybase = PS2_MEM_ReadUInt(PS2_NF_sentrybase);
+            if (PS2NOTWITHINMEMRANGE(sentrybase)) // if sentrybase is invalid
+                return;
+            float sentryx = PS2_MEM_ReadFloat(sentrybase + PS2_NF_sentryx);
+            float sentryy = PS2_MEM_ReadFloat(sentrybase + PS2_NF_sentryy);
+            const float fov = PS2_MEM_ReadFloat(PS2_NF_sentryfov);
+            if (sentryx >= -1.f && sentryx <= 1.f)
+            {
+                sentryx += (float)xmouse / 10.f * looksensitivity / 360.f / (SENTRYFOVBASE / fov);
+                sentryy += (float)(!invertpitch ? ymouse : -ymouse) / 10.f * looksensitivity / (90.f / (SENTRYMAXY - SENTRYMINY)) / (SENTRYFOVBASE / fov);
+                while (sentryx <= -1.f)
+                    sentryx += 1.f;
+                while (sentryx >= 1.f)
+                    sentryx -= 1.f;
+                sentryy = ClampFloat(sentryy, SENTRYMINY, SENTRYMAXY);
+                PS2_MEM_WriteFloat(sentrybase + PS2_NF_sentryx, sentryx);
+                PS2_MEM_WriteFloat(sentrybase + PS2_NF_sentryy, sentryy);
+            }
+        }
+    }
 }

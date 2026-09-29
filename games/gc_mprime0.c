@@ -98,24 +98,6 @@ static void GC_MPRIME0_Inject(void)
 	fovpointer = MEM_ReadInt(MPRIME0_FOV_POINTER);
 
 
-	pointertopointerplayerstate = MEM_ReadUInt(0x8045AA60);
-	pointerplayerstate = MEM_ReadUInt(pointertopointerplayerstate);
-	pointerscantimes = MEM_ReadUInt(pointerplayerstate + 0x17C);
-	creature = MEM_ReadUInt(pointerscantimes + 0x294);
-
-	//  MEM_WriteInt(pointerscantimes + 0x294, 0x3F800000); 
-	//  MEM_WriteInt(pointerscantimes + 0x8C4, 0x3F800000);
-	//  MEM_WriteInt(pointerscantimes + 0x106C, 0x3F800000);
-
-	//MEM_WriteInt(pointerplayerstate + 0x180, 109);
-
-
-	// printf("current logbook: %i\n", MEM_ReadUInt(pointerplayerstate + 0x180));
-
-	// printf("total logbook: %i\n", MEM_ReadUInt(pointerplayerstate + 0x184));
-	
-
-
 	float fov = MEM_ReadFloat(fovpointer + MPRIME0_FOV);
 
 	//printf("fov: %f\n", fov);
