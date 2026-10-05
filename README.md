@@ -16,7 +16,7 @@ An external app that injects cursor input into game memory.
 | PPSSPP | 1.14.4 | PPSSPPWindows.exe / PPSSPPWindows64.exe |
 | Project64 | >=3.0.1 | Project64.exe |
 * NOTE: Versions given are the latest that have been tested working, may work with newer
-* NOTE: PCSX2 will only hook with **BIOS versions 5XXXX and up**.
+* NOTE: If you have trouble hooking on PCSX2, please use the **BIOS version SCPH-79001 NA 220-060905**.
 
 ## Supported RetroArch Cores
 | Console | Core | Version |
