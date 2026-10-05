@@ -216,7 +216,7 @@ avoid clicking off the window.
     - Emulator is supported and version matches what is listed in this README<br>
     (Newer or older versions may work, but the listed version is tested working)
     - ROM/ISO match the version/serial listed in this README
-    - **PCSX2**: PS2 BIOS version is **5XXXX or higher**
+    - **PCSX2**: PS2 BIOS version is **SCPH-79001 NA 220-060905**
     - **RetroArch**: RA window must be **focused** for it to hook initially
   - Some emulator settings prevent hooking so you can also try **restoring the default emulator settings**:
     - **PCSX2**: *Settings->Interface->Restore Defaults*
