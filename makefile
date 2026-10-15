@@ -23,7 +23,7 @@ WFLAGS = -Wextra -pedantic -Wno-parentheses
 RESFLAGS = -F pe-x86-64 --input-format=rc -O coff
 
 #Linker flags
-OBJS = $(OBJDIR)main.o $(OBJDIR)memory.o $(OBJDIR)mouse.o $(OBJDIR)manymouse.o $(OBJDIR)windows_wminput.o $(OBJDIR)icon.res $(OBJDIR)joystick.o  #$(OBJDIR)xinputjoy.o 
+OBJS = $(OBJDIR)main.o $(OBJDIR)memory.o $(OBJDIR)mouse.o $(OBJDIR)manymouse.o $(OBJDIR)windows_wminput.o $(OBJDIR)icon.res $(OBJDIR)joystick.o $(OBJDIR)export.o  #$(OBJDIR)xinputjoy.o 
 GAMEOBJS = $(patsubst $(GAMESDIR)%.c, $(OBJDIR)%.o, $(wildcard $(GAMESDIR)*.c))
 LIBS = -static-libgcc -lpsapi -lwinmm  -lmingw32 -lSDL2main -lSDL2 #-lxinput
 LFLAGS = $(OBJS) $(GAMEOBJS) -I/include -L/lib -o $(EXENAME) $(LIBS) -m64 -s
@@ -37,6 +37,9 @@ all: clean mouseinjector
 #Individual recipes
 $(OBJDIR)main.o: $(SRCDIR)main.c $(SRCDIR)main.h $(SRCDIR)memory.h $(SRCDIR)joystick.h $(SRCDIR)mouse.h $(GAMESDIR)game.h
 	$(CC) -c $(SRCDIR)main.c -o $(OBJDIR)main.o $(CFLAGS) $(WFLAGS)
+
+$(OBJDIR)export.o: $(SRCDIR)export.c $(SRCDIR)export.h
+	$(CC) -c $(SRCDIR)export.c -o $(OBJDIR)export.o $(CFLAGS) $(WFLAGS)
 
 $(OBJDIR)memory.o: $(SRCDIR)memory.c $(SRCDIR)memory.h
 	$(CC) -c $(SRCDIR)memory.c -o $(OBJDIR)memory.o $(CFLAGS) $(WFLAGS)
