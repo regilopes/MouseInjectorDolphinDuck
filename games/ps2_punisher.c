@@ -42,6 +42,17 @@
 #define TP_CAMXSINB  0x30C
 #define TP_CAMXCOSB  0x304
 
+
+#define TP_CAMPOS_X  0x48A328  // Exemplo hipotético
+#define TP_CAMPOS_Y  0x48A330  // Exemplo hipotético
+#define TP_CAMPOS_Z  0x48A33C  // Exemplo hipotético
+
+
+#define TP_PLAYERPOS_X 0x154b948 // Offset da pos X do jogador (no playerBase)
+#define TP_PLAYERPOS_Y 0x154b950 // Offset da pos Y do jogador (no playerBase)
+#define TP_PLAYERPOS_Z 0x154b94C // Offset da pos Z do jogador (no playerBase)
+
+
 #define TP_BODYX  0x77C
 
 #define TP_FOV 0x53A4F4
@@ -100,7 +111,7 @@ static void PS2_PUNISHER_Inject(void)
 		   
 	float camXsin = PS2_MEM_ReadFloat(camBase + TP_CAMXSIN);
 	float camXcos = PS2_MEM_ReadFloat(camBase + TP_CAMXCOS);
-	float angle = atan(camXsin / camXcos);
+	float angle = atan2f(camXsin, camXcos);
 
 	float bodyX = PS2_MEM_ReadFloat(camBase + TP_BODYX);
 
@@ -108,13 +119,37 @@ static void PS2_PUNISHER_Inject(void)
 	camY -= (float)(!invertpitch ? ymouse : -ymouse) * looksensitivity / scale * fov;
 	camY = ClampFloat(camY, -0.82f, 0.82f);
 
-	if(camXcos < 0)
-		angle -= PI;
+
 
 	angle += (float)xmouse * looksensitivity / scale * fov;
 
-	camXsin = (float)sin(angle);
-	camXcos = (float)cos(angle);
+	camXsin = (float)sinf(angle);
+	camXcos = (float)cosf(angle);
+
+	float bodyAngle = angle;
+	while (bodyAngle > PI) bodyAngle -= TAU;
+	while (bodyAngle < -PI) bodyAngle += TAU;
+
+	// 2. Injeta a rotação no corpo do personagem e nas matrizes secundárias
+	//PS2_MEM_WriteFloat(camBase + TP_BODYX, bodyAngle);
+
+
+
+	float cameraDistance = 4.0f; // Descubra este valor no Cheat Engine!
+    float hDist = cameraDistance * cosf(camY);
+
+    float pX = PS2_MEM_ReadFloat(TP_PLAYERPOS_X);
+    float pY = PS2_MEM_ReadFloat(TP_PLAYERPOS_Y);
+    float pZ = PS2_MEM_ReadFloat(TP_PLAYERPOS_Z);
+
+    float camPosX = pX - (hDist * sinf(angle));
+    float camPosZ = pZ - (hDist * cosf(angle));
+    float camPosY = pY + (cameraDistance * sinf(camY));
+
+    // INJETAR A POSIÇÃO ESPACIAL FORÇA A CÂMERA A FICAR PARADA RELATIVA AO JOGADOR
+    PS2_MEM_WriteFloat(TP_CAMPOS_X, camPosX);
+    PS2_MEM_WriteFloat(TP_CAMPOS_Y, camPosY);
+    PS2_MEM_WriteFloat(TP_CAMPOS_Z, camPosZ);
 
 
 	PS2_MEM_WriteFloat(camBase + TP_CAMY, camY);
@@ -122,5 +157,9 @@ static void PS2_PUNISHER_Inject(void)
 
 	PS2_MEM_WriteFloat(camBase + TP_CAMXSIN, camXsin);
 	PS2_MEM_WriteFloat(camBase + TP_CAMXCOS, camXcos);
+	PS2_MEM_WriteFloat(camBase + TP_CAMXSINB, -camXsin);
+	PS2_MEM_WriteFloat(camBase + TP_CAMXCOSB, camXcos);
+
+
 
 }
