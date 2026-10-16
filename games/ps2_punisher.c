@@ -130,26 +130,6 @@ static void PS2_PUNISHER_Inject(void)
 	while (bodyAngle > PI) bodyAngle -= TAU;
 	while (bodyAngle < -PI) bodyAngle += TAU;
 
-	// 2. Injeta a rotação no corpo do personagem e nas matrizes secundárias
-	//PS2_MEM_WriteFloat(camBase + TP_BODYX, bodyAngle);
-
-
-
-	float cameraDistance = 4.0f; // Descubra este valor no Cheat Engine!
-    float hDist = cameraDistance * cosf(camY);
-
-    float pX = PS2_MEM_ReadFloat(TP_PLAYERPOS_X);
-    float pY = PS2_MEM_ReadFloat(TP_PLAYERPOS_Y);
-    float pZ = PS2_MEM_ReadFloat(TP_PLAYERPOS_Z);
-
-    float camPosX = pX - (hDist * sinf(angle));
-    float camPosZ = pZ - (hDist * cosf(angle));
-    float camPosY = pY + (cameraDistance * sinf(camY));
-
-    // INJETAR A POSIÇÃO ESPACIAL FORÇA A CÂMERA A FICAR PARADA RELATIVA AO JOGADOR
-    PS2_MEM_WriteFloat(TP_CAMPOS_X, camPosX);
-    PS2_MEM_WriteFloat(TP_CAMPOS_Y, camPosY);
-    PS2_MEM_WriteFloat(TP_CAMPOS_Z, camPosZ);
 
 
 	PS2_MEM_WriteFloat(camBase + TP_CAMY, camY);
