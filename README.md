@@ -34,13 +34,13 @@ An external app that injects cursor input into game memory.
 ## How to Use
 1. Start emulator first
 2. Start MouseInjector, read initial information then press ctrl+1
-3. As soon the game gets loaded (studio logos or intros) press '4' to hook into the process
+3. As soon the game gets loaded (studio logos or intros) press 'CTRL+4' to hook into the process
     1. If game is supported then the mouse will be captured at the position it was at when hooked
-        * You will be <b><u>unable</u></b> to use the mouse elsewhere while it is hooked, press 4 to unhook
+        * You can <b><u>LOCK</u></b> the mouse while it is hooked, press CTRL+9 to lock/unlock
         * Some games depend on post startup values/addresses so hook may not happen immediately
             * DuckStation games usually will not hook until after the startup sequence
     2. Unsupported/broken games will not hook and mouse won't be captured
-4. Adjust options with numbers 4-7 while in-game, ctrl+0 will lock the settings
+4. Adjust options with numbers 5-7 while in-game, ctrl+0 will lock/unlock the settings
 * NOTE: The cursor still moves but gets moved back to it's initial hook position so windowed mode may not
 work very well if you have also mapped the mouse buttons as you may click off the window. Fullscreen is
 recommended and with dual-monitors it is recommended to put the cursor in the corner before hooking to
@@ -145,9 +145,11 @@ avoid clicking off the window.
 | Game Title | Serial | Mouse Support | Issues | In-game Options | Cheat File |
 | ---------- | :----: | :-----------: | :----: | :-------------: | :--------: |
 | 007: Agent Under Fire (USA) | SLUS-20265 | Good | <sup>Mouse movement warps camera while paused and during in-game cutscenes</br>Aim-lock not disabled on auto-scroller levels</sub> | - | - |
+| 007: Nightfire (USA)| SLUS-20579 | Average | <sup>Weapons jitters heavily on last level (Equinox)</sub> | - | - |
 | 50 Cent: Bulletproof (USA) | SLUS-21315 | Good | <sup>Not fully tested</sub> | <sup>Camera->Aim Assist: Off</sub> | - |
 | Area 51 (USA) | SLUS-20595 | Good | <sup>Not fully tested</br>Needs 'Mouse Injector Fixes' patch enabled on PCSX2 </sub></sub> | - | <sup>Needs updated patches.zip (search for PATCHES REQUIRED on this readme)</sub> |
 | Armored Core 2 (USA) | SLUS-20014 | Good | <sup>Arena replays broken</br>Not fully tested</sub> | - | - |
+| Army Men - Sarge's Heroes (USA) | SLUS-20132 | Good | <sup>Not fully tested</sub> | - | - |
 | Beverly Hills Cop (PAL) | SLES-54456 | Fair | <sup>Not fully tested</sub> | - | - |
 | Black (USA) | SLUS-21376 | Good | <sup>Not fully tested</sub> | - | - |
 | Call of Duty 3 (USA) | SLUS-21426 | Good | <sup>3rd-Person Jeep camera not supported</br>Not fully tested</sub> | - | - |
@@ -160,6 +162,7 @@ avoid clicking off the window.
 | Destroy All Humans! 2 (USA) | SLUS-21439 | Good | <sup>**Requires supplied cheat file**</sub> | <sup>Not fully tested</sub> | **42DF8C8C.pnach** |
 | Dirge of Cerberus - Final Fantasy VII (USA) | SLUS-21419 | Good | <sup>**Requires supplied cheat file to disable auto-lookahead**</sub> | <sup>Not fully tested</sub> | **44A5FA15.pnach** |
 | Eternal Ring (USA) | SLUS-20015 | Good | <sup>Not fully tested</sub> | - | - |
+| Ghost Recon 2 (USA) | SLUS-21105 | Good | <sup>Not fully tested</sub> | - | - |
 | Grand Theft Auto III (USA) | SLUS-20062 | Great | <sup> Camera control via gamepad available* Issues? see [this](https://github.com/regilopes/MouseInjectorDolphinDuck#gamepad-right-stick-fix-instructions) </br> Needs 'Mouse Injector Fixes' patch enabled on PCSX2 </sub> | - | <sup>Needs updated patches.zip (search for PATCHES REQUIRED on this readme)</sub> |
 | Grand Theft Auto Vice City (USA) | SLUS-20552 | Great | <sup> Camera control via gamepad available* Issues? see [this](https://github.com/regilopes/MouseInjectorDolphinDuck#gamepad-right-stick-fix-instructions) </br> Needs 'Mouse Injector Fixes' patch enabled on PCSX2 </sub> | - | <sup>Needs updated patches.zip (search for PATCHES REQUIRED on this readme)</sub> |
 | Grand Theft Auto San Andreas (USA) | SLUS-20946 | Great | <sup>Needs 'Mouse Injector Fixes' patch enabled on PCSX2 - Version 1.03. </sub> | - | <sup>Needs updated patches.zip (search for PATCHES REQUIRED on this readme)</sub> |
@@ -188,11 +191,14 @@ avoid clicking off the window.
 | Robotech: Invasion (USA) | SLUS-20823 | Fair | <sup>Turrets not supported</br>Not fully tested</sub> | - | - |
 | SOCOM U.S. Navy SEALs (USA) | SCUS-97134 | Fair | <sup>Not fully tested</sub> | <sup>Aim Assist: Off</sub> | - |
 | Serious Sam: Next Encounter (USA) | SLUS-20907 | Good | <sup>Vehicles not supported</br>Not fully tested</sub> | <sup>Auto Center: Off</br>Auto Aim: Off</sub> | - |
+| Splinter Cell (USA) | SLUS-20652 | Good | <sup>Not fully tested</sub> | - | - |
 | SWAT: Global Strike Team (USA) | SLUS-20433 | Good | <sup>Not fully tested</sub> | <sup>Auto Leveling: Off</br>Auto Aim: Off</br>Targeting Aid: Off</sub> | - |
+| The Punisher (USA) | SLUS-20864 | Good | <sup>Not fully tested</sub> | - | - |
 | Time Crisis II (USA) | SLUS-20219 | Good | <sup>Not fully tested</sub> | - | - |
 | TimeSplitters (v1.10, v2.00) (USA) | SLUS-20090 | Good | <sup>**Optional cheat to always show crosshair**</br>Not fully tested</sub> | <sup>Auto Lookahead: No</br>Auto Aim: Off</sub> | **B4A004F2.pnach (v1.10)</br>8966730F.pnach (v2.00)** |
 | Urban Chaos: Riot Response (USA) | SLUS-21390 | Good | <sup>Not fully tested</sub> | <sup>Auto-Center: No</sub> | - |
 | Vampire Night (USA) | SLUS-20221 | Good | <sup>Not fully tested</sub> | - | - |
+| XIII (USA) | SLUS-20677 | Good | <sup>Not fully tested</sub> | - | - |
 * NOTE: PCSX2 will only hook with **BIOS version SCPH-79001 NA 220-060905**.
 * NOTE: Some aspects may break when a game is started with overclocking. Requires testing.
 * PCSX2 Settings: **Disable** *'Settings->Interface->Double-Click Toggles Fullscreen'* | **Enable** *'Settings->Interface->Hide Cursor In Fullscreen'*
@@ -221,9 +227,13 @@ avoid clicking off the window.
   - Some emulator settings prevent hooking so you can also try **restoring the default emulator settings**:
     - **PCSX2**: *Settings->Interface->Restore Defaults*
     - **DuckStation**: *Settings->General->Restore Defaults*
-  - **NOTE**: The program has only been tested on **Windows 10** and may not be compatible<br>
+  - **NOTE**: The program has only been tested on **Windows 10 and 11** and may not be compatible<br>
   with other versions of Windows
   - **NOTE**: If emulator is restarted, the injector must be restarted as well
+### Q: Why my PS2 game hooks but is not working properly?
+  - Some games on PCSX2 that need you to update your patches.zip with the one provided.<br>
+  - Also you need to activate them on the game properties on the 'patches' tab.<br>
+  - Detailed instructions are on PATCHES REQUIRED section on this README.
 ### Q: Game hooks but is not listed as supported?
   - There are many games that hook but aren't listed as supported as they are unfinished<br>
   hacks. A game is added to the supported list when enough testing has been done to assume<br>
@@ -265,7 +275,7 @@ example:
 
 - Restart Windows if the gamepad Right Stick still feeling too slow/fast.
 
-Windows for some reason throttle the application whe minimized making right stick speed inconsitent. 
+Windows for some reason throttle the application when minimized making right stick speed inconsitent. 
 
 # ManyMouse
 
