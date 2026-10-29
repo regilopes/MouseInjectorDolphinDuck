@@ -288,6 +288,7 @@ void MEM_Quit(void)
 //==========================================================================
 uint8_t MEM_FindRamOffset(void)
 {
+	// Garante que o offset antigo seja totalmente zerado antes da nova busca
 	emuoffset = 0;
 
 	MEMORY_BASIC_INFORMATION info; // store a snapshot of memory information
@@ -303,28 +304,20 @@ uint8_t MEM_FindRamOffset(void)
 		const char *moduleName = processName;
 		const char *symbol = "RAM";
 
-		//printf("Scanning memory.\n");
 		HANDLE snapshot = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, Process_ID);
-		
-		// HMODULE hMod = RemoteHandle(Process_ID, moduleName);
-		// // if (!hMod) {
-		// // 	return;
-		// // }
-
-		// FARPROC addr = RemoteAddress(snapshot, hMod, symbol);
+		if (!snapshot) return 0; // Saída segura se não conseguir abrir o processo
 
 		HMODULE hMod = MEM_REMOTE_HANDLE(Process_ID, moduleName);
 		FARPROC addr = MEM_REMOTE_ADDRESS(snapshot, hMod, symbol);
 
 		CloseHandle(snapshot);
 
-
 		if (addr != 0) {
-			// uint64_t pointerAddress = addr;
 			uint64_t pointerAddress = (uint64_t)(uintptr_t)addr;
-			uint64_t foundValue;
-			ReadProcessMemory(emuhandle, (LPCVOID)pointerAddress, &foundValue, sizeof(foundValue), NULL);
-			emuoffset = foundValue;
+			uint64_t foundValue = 0;
+			if (ReadProcessMemory(emuhandle, (LPCVOID)pointerAddress, &foundValue, sizeof(foundValue), NULL)) {
+				emuoffset = foundValue;
+			}
 		}
 		printdebug(emuoffset);
 	}
@@ -345,86 +338,86 @@ uint8_t MEM_FindRamOffset(void)
 			fclose(f);
 		}
 	}
-	//-----------------------------------------------------------------------
+	
 	//--------------------PCSX2 RAM export pointer---------------------------
-	//Using EEmem address causes some sort out of sync value updating in some games, only in CoD: FH?, seems like a PCSX2 thing or something with the injector?? -> use of a pointer to a different copy of PS2 virtual memory (hotfixed below)
 	if (isPcsx2handle == 1) {
-
-		// const char* processName = PS2_EXE_Name;
-		// const char* moduleName = processName;
-		// const char* symbol = "EEmem";
-		// int chunk_size = 4096; //mem region size
-
 		const char *processName = PS2_EXE_Name;
 		const char *moduleName = processName;
 		const char *symbol = "EEmem";
-		int chunk_size = 4096; // mem region size
+		int chunk_size = 4096; 
 
 		HANDLE snapshot = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, Process_ID);
-		//HMODULE hMod = RemoteHandle(Process_ID, moduleName);
-
-		// if (!hMod) {
-		// 	return;
-		// }
-
-		//FARPROC addr = RemoteAddress(snapshot, hMod, symbol);
+		if (!snapshot) return 0; // Saída segura se falhar ao abrir snapshot
 
 		HMODULE hMod = MEM_REMOTE_HANDLE(Process_ID, moduleName);
 		FARPROC addr = MEM_REMOTE_ADDRESS(snapshot, hMod, symbol);
 
 		CloseHandle(snapshot);
-		//search from EEmem SLUS string offset to different copy of virtual PS2 RAM
-		// uint64_t PS2_Address = addr;
+
+		if (addr == 0) {
+			return 0; // ABORTA A OPERAÇÃO SE O PCSX2 DESALOCOU A MEMÓRIA NO LOADING
+		}
+
 		uint64_t pointerAddress = (uint64_t)(uintptr_t)addr;
-		if (addr != 0) {
-			// uint64_t pointerAddress = addr;
-			uint64_t pointerAddress = (uint64_t)(uintptr_t)addr;
-			uint64_t EEmem;
-			uint64_t AddressCopy;
-			uint64_t OtherCopyBase;
-			BYTE* buffer;
-			SIZE_T bytesRead;
-			LPCVOID address = 0;
+		uint64_t EEmem = 0;
+		uint64_t AddressCopy = 0;
+		uint64_t OtherCopyBase = 0;
+		BYTE* buffer = NULL;
+		SIZE_T bytesRead = 0;
+		LPCVOID address = 0;
 
-			ReadProcessMemory(emuhandle, (LPCVOID)pointerAddress, &EEmem, sizeof(EEmem), NULL); //EEmem is now set > offset this by 0x100000 > load up a chunk of data > loop to find ram copy that does not cause issues with injector, substract the 0x100000 and set emuoffset
+		if (!ReadProcessMemory(emuhandle, (LPCVOID)pointerAddress, &EEmem, sizeof(EEmem), NULL)) {
+			return 0; // Aborta se a leitura falhar devido à transição de tela
+		}
 
-			BYTE* chunk = (BYTE*)malloc(chunk_size);
-			// if (!chunk) {
-			// 	return;
-			// }
+		BYTE* chunk = (BYTE*)malloc(chunk_size);
+		if (!chunk) return 0;
 
-			uint64_t offset = EEmem + 0x100000; //use an offset where the gamecode is
-			LPCVOID remotePtr = (LPCVOID)offset;
-			ReadProcessMemory(emuhandle, remotePtr, chunk, chunk_size, &bytesRead); // array gets loaded up correctly
+		uint64_t offset = EEmem + 0x100000; 
+		LPCVOID remotePtr = (LPCVOID)offset;
+		
+		if (!ReadProcessMemory(emuhandle, remotePtr, chunk, chunk_size, &bytesRead)) {
+			free(chunk);
+			return 0;
+		}
 
-			//printf("Scanning memory.\n");
-			while (VirtualQueryEx(emuhandle, address, &info, sizeof(info)) && info.RegionSize > 0) { //memory scan loop
-				if (info.State == MEM_COMMIT && (info.Protect == PAGE_READONLY || info.Protect == PAGE_READWRITE)) {
-					buffer = (BYTE*)malloc(info.RegionSize);
-					if (buffer && ReadProcessMemory(emuhandle, info.BaseAddress, buffer, info.RegionSize, &bytesRead)) {
-						for (SIZE_T i = 0; i <= bytesRead - chunk_size; i++) {
-							if (memcmp(buffer + i, chunk, chunk_size) == 0) { // if found match, exit, break out of the nested loop on the first match, will find EEmem if it wont find other memory
-								// AddressCopy = (uint64_t*)((BYTE*)info.BaseAddress + i);
-								AddressCopy = (uint64_t)(uintptr_t)((BYTE*)info.BaseAddress + i);
-								//printdebug(AddressCopy);
-								goto breakout;
-							}
+		while (VirtualQueryEx(emuhandle, address, &info, sizeof(info)) && info.RegionSize > 0) { 
+			if (info.State == MEM_COMMIT && (info.Protect == PAGE_READONLY || info.Protect == PAGE_READWRITE)) {
+				buffer = (BYTE*)malloc(info.RegionSize);
+				if (buffer && ReadProcessMemory(emuhandle, info.BaseAddress, buffer, info.RegionSize, &bytesRead)) {
+					for (SIZE_T i = 0; i <= bytesRead - chunk_size; i++) {
+						if (memcmp(buffer + i, chunk, chunk_size) == 0) { 
+							AddressCopy = (uint64_t)(uintptr_t)((BYTE*)info.BaseAddress + i);
+							goto breakout;
 						}
 					}
-					free(buffer);
 				}
-				address = (BYTE*)info.BaseAddress + info.RegionSize;
+				if (buffer != NULL) {
+					free(buffer);
+					buffer = NULL;
+				}
 			}
-
-			breakout:
-			free(chunk);// free the memory
-			free(buffer);
-
-			OtherCopyBase = AddressCopy - 0x100000;
-			emuoffset = OtherCopyBase;
-
-			// TODO: check the hotfix, clean up the code etc, remove the ridiculous printfs and code in normal debug page, and maybe some simple ui
+			address = (BYTE*)info.BaseAddress + info.RegionSize;
 		}
+
+		breakout:
+		if (chunk != NULL) {
+			free(chunk);
+			chunk = NULL;
+		}
+		if (buffer != NULL) {
+			free(buffer);
+			buffer = NULL;
+		}
+
+		if (AddressCopy == 0) {
+			return 0; // Evita cálculo matemático com endereço nulo
+		}
+
+		OtherCopyBase = AddressCopy - 0x100000;
+		emuoffset = OtherCopyBase;
+		
+		return (emuoffset != 0x0); // Retorna sucesso diretamente para o PCSX2
 	}
 
 

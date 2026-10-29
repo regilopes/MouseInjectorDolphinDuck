@@ -64,12 +64,17 @@ FARPROC MEM_REMOTE_ADDRESS(HANDLE snapshot, HMODULE hMod, const char *procName)
 	DWORD *funcs = (DWORD *)malloc(expDir.NumberOfFunctions * sizeof(DWORD));
 	DWORD *names = (DWORD *)malloc(expDir.NumberOfNames * sizeof(DWORD));
 	WORD *ordinals = (WORD *)malloc(expDir.NumberOfNames * sizeof(WORD));
+
+	// SE QUALQUER LEITURA FALHAR DAQUI PARA FRENTE, IR PARA A LIMPEZA (CLEANUP)
+	if (!funcs || !names || !ordinals)
+		goto cleanup;
+
 	if (!ReadProcessMemory(snapshot, base + expDir.AddressOfFunctions, funcs, expDir.NumberOfFunctions * sizeof(DWORD), NULL))
-		return NULL;
+		goto cleanup;
 	if (!ReadProcessMemory(snapshot, base + expDir.AddressOfNames, names, expDir.NumberOfNames * sizeof(DWORD), NULL))
-		return NULL;
+		goto cleanup;
 	if (!ReadProcessMemory(snapshot, base + expDir.AddressOfNameOrdinals, ordinals, expDir.NumberOfNames * sizeof(WORD), NULL))
-		return NULL;
+		goto cleanup;
 
 	FARPROC addr = NULL;
 	for (DWORD i = 0; i < expDir.NumberOfNames; i++)
@@ -82,9 +87,20 @@ FARPROC MEM_REMOTE_ADDRESS(HANDLE snapshot, HMODULE hMod, const char *procName)
 		}
 	}
 
-	free(funcs);
-	free(names);
-	free(ordinals);
+cleanup:
+	// Liberação segura aplicando a Solução 1
+	if (funcs != NULL) {
+		free(funcs);
+		funcs = NULL;
+	}
+	if (names != NULL) {
+		free(names);
+		names = NULL;
+	}
+	if (ordinals != NULL) {
+		free(ordinals);
+		ordinals = NULL;
+	}
 
 	return addr;
 }
