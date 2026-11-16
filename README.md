@@ -151,6 +151,7 @@ avoid clicking off the window.
 | Armored Core 2 (USA) | SLUS-20014 | Good | <sup>Arena replays broken</br>Not fully tested</sub> | - | - |
 | Army Men - Sarge's Heroes (USA) | SLUS-20132 | Good | <sup>Not fully tested</sub> | - | - |
 | Beverly Hills Cop (PAL) | SLES-54456 | Fair | <sup>Not fully tested</sub> | - | - |
+| Battlefield 2: Modern Combat (USA) | SLUS-21026 | Good | <sup>Not fully tested</br>Needs 'Mouse Injector Fixes' patch enabled on PCSX2 </sub></sub> | - | <sup>Needs updated patches.zip (search for PATCHES REQUIRED on this readme)</sub> |
 | Black (USA) | SLUS-21376 | Good | <sup>Not fully tested</sub> | - | - |
 | Call of Duty 3 (USA) | SLUS-21426 | Good | <sup>3rd-Person Jeep camera not supported</br>Not fully tested</sub> | - | - |
 | Call of Duty 2: Big Red One (USA) | SLUS-21228 | Good | <sup>none</sub> | - | - |
@@ -174,7 +175,9 @@ avoid clicking off the window.
 | Hitman 2: Silent Assassin (USA)| SLUS-20374 | Good | <sup>Not fully tested</sub> | - | - |
 | Jurassic: The Hunted (USA) | SLUS-21907 | Good | <sup>**Requires supplied cheat file**</br>Optional 60FPS cheat recommended</sub> | <sup>Aim Assist: Off</sub> | **EFE4448F.pnach** |
 | King's Field IV: The Ancient City (USA) | SLUS-20318 | Good | <sup>Not fully tested</sub> | - | - |
-| Max Payne (USA) | SLUS-20230 | Good | <sup>Not fully tested</sub> | - | - |
+| Max Payne (USA) | SLUS-20230 | Good | - | - | - |
+| Max Payne 2 (USA) | SLUS-20814 | Good | <sup>Not fully tested</sub> | - | - |
+| Medal of Honor: Rising Sun (USA) | SLUS-20753 | Good | - | - | - |
 | Medal of Honor: Vanguard (USA) | SLUS-21597 | Good | <sup>Multiplayer mode not supported</sub> | - | - |
 | Mercenaries: Playground of Destruction (USA) | SLUS-20932 | Fair | <sup>**Requires cheat file to disable aim-assist**</br> X-axis in normal vehicles not supported</sub> | - | **23510F99.pnach** |
 | Metal Gear Solid 3: Subsistence (USA) | SLUS-21359 | Fair | <sup>Crashes when toggling too fast to 1st person camera and shooting</sub> | - | - |
