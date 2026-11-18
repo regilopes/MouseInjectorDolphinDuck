@@ -37,7 +37,7 @@
 //not offsets
 #define BF2_FOV 0x77B3E8
 #define BF2_SLOT 0x8D06F0
-#define BF2_ONVEHICLE 0x8D069C
+#define BF2_ONVEHICLE 0x75D4EB
 
 //addresses used on the code cave patch for the right analog input injection
 #define BF2_CC_INPUTY 0x008D06C4 //most vehicles weapons use this one
@@ -83,22 +83,23 @@ static uint8_t PS2_BF2_Status(void)
 static uint8_t PS2_BF2_DetectSoldierCamBase(void)
 {
 	//read the current slot in use (main, left, lower, right, upper)
-	uint8_t slot = PS2_MEM_ReadUInt(BF2_SLOT);
+	uint8_t slot = PS2_MEM_ReadUInt8(BF2_SLOT);
 
 	uint32_t p4 = PS2_MEM_ReadUInt(BF2_CAM_BASE_PTR) + 0x1C8; // 1AD86B0 + 1C8 = 1AD8878
-	uint32_t p3 = PS2_MEM_ReadUInt(p4)+(slot * 4); // 1DDA760
+	uint32_t p3 = PS2_MEM_ReadUInt(p4)+0x0;
+	//uint32_t p3 = PS2_MEM_ReadUInt(p4)+(slot * 4); // 1DDA760
 	uint32_t p2 = PS2_MEM_ReadUInt(p3); // 7F8EF0
 	uint32_t p1 = PS2_MEM_ReadUInt(p2) + 0x1C; // 1B11420 + 1C = 1B1143C
 	uint32_t tempSoldierCamBase = PS2_MEM_ReadUInt(p1);
 
 
 	// TODO: sanity check
-	if (tempSoldierCamBase){
+	//if (tempSoldierCamBase){
 	 	soldierCamBase = tempSoldierCamBase;
 	 	return 1;
-	}
+	//}
 
-	return 0;
+	//return 0;
 }
 
 static uint8_t PS2_BF2_DetectInputBase(void)
@@ -136,26 +137,26 @@ static void PS2_BF2_Inject(void)
 
 	//--------------------------------------------------------------------------------	
 	//changing in-game sensitivity
-	PS2_MEM_WriteUInt(0xB626CC, 0x00000200); // 512
+	PS2_MEM_WriteUInt(0xB626CC, 768); 
 
 	
 	
-	if(PS2_MEM_ReadUInt(BF2_ONVEHICLE)){
-		//if (PS2_BF2_DetectInputBase()){
+	if(PS2_MEM_ReadUInt8(BF2_ONVEHICLE)){
+		if (PS2_BF2_DetectInputBase()){
 
 		//faking Right Analog input to move camera on vehicles.
 		inputY = PS2_MEM_ReadFloat(BF2_CC_INPUTY);
-		inputY -= (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale * fov * 10.f;
+		inputY -= (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale * fov * 8.f;
 		inputY *= 0.9f;
 		inputY = ClampFloat(inputY, -1.0f, 1.0f);
 
 		inputX = PS2_MEM_ReadFloat(BF2_CC_INPUTX);
-		inputX += (float)xmouse * looksensitivity / scale * fov * 10.f;
+		inputX += (float)xmouse * looksensitivity / scale * fov * 8.f;
 		inputX *= 0.9f;
 		inputX = ClampFloat(inputX, -1.0f, 1.0f);
 
 		hInputX = PS2_MEM_ReadFloat(BF2_CC_HINPUTX);
-		hInputX += (float)xmouse * looksensitivity / scale * fov * 10.f;
+		hInputX += (float)xmouse * looksensitivity / scale * fov * 8.f;
 		hInputX *= 0.9f;
 		//hInputX += (float)rx * looksensitivity / 32767.f * fov;
 		hInputX = ClampFloat(hInputX, -1.0f, 1.0f);
@@ -164,7 +165,7 @@ static void PS2_BF2_Inject(void)
 		PS2_MEM_WriteFloat(BF2_CC_INPUTX, (float)inputX);
 		PS2_MEM_WriteFloat(BF2_CC_HINPUTX, (float)hInputX);
 
-		//}	
+		}	
 	}else{
 		if (PS2_BF2_DetectSoldierCamBase()){
 
@@ -177,6 +178,7 @@ static void PS2_BF2_Inject(void)
 
 			PS2_MEM_WriteFloat(soldierCamBase + BF2_CAMX, (float)camX);
 			PS2_MEM_WriteFloat(soldierCamBase + BF2_CAMY, (float)camY);
+			
 		}
 	}
 }
