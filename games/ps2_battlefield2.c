@@ -27,6 +27,8 @@
 
 #define PI 3.14159265f // 0x40490FDB
 // #define BF2_CAM_BASE_PTR 0x782B98
+#define BF2_SLOT_BASE 0xB6450C
+#define BF2_VEHICLE_BASE 0x0
 #define BF2_CAM_BASE_PTR 0xB295F0
 #define BF2_INPUT_BASE 0xB2A020
 //#define BF2_CAM_BASE_PTR 0xF0100 // Needs "Mouse Injector Required" patch active.
@@ -36,7 +38,7 @@
 
 //not offsets
 #define BF2_FOV 0x77B3E8
-#define BF2_SLOT 0x8D06F0
+#define BF2_SLOT 0xB6450C
 #define BF2_ONVEHICLE 0x75D4EB
 
 //addresses used on the code cave patch for the right analog input injection
@@ -83,15 +85,17 @@ static uint8_t PS2_BF2_Status(void)
 static uint8_t PS2_BF2_DetectSoldierCamBase(void)
 {
 	//read the current slot in use (main, left, lower, right, upper)
-	uint8_t slot = PS2_MEM_ReadUInt8(BF2_SLOT);
+	uint32_t slot = PS2_MEM_ReadPointer(BF2_SLOT);
+	//printf("slot: %08X\n", slot);
+	slot = PS2_MEM_ReadUInt(slot + 0x4F8);
 
-	uint32_t p4 = PS2_MEM_ReadUInt(BF2_CAM_BASE_PTR) + 0x1C8; // 1AD86B0 + 1C8 = 1AD8878
-	uint32_t p3 = PS2_MEM_ReadUInt(p4)+0x0;
-	//uint32_t p3 = PS2_MEM_ReadUInt(p4)+(slot * 4); // 1DDA760
-	uint32_t p2 = PS2_MEM_ReadUInt(p3); // 7F8EF0
-	uint32_t p1 = PS2_MEM_ReadUInt(p2) + 0x1C; // 1B11420 + 1C = 1B1143C
-	uint32_t tempSoldierCamBase = PS2_MEM_ReadUInt(p1);
+	uint32_t tempSoldierCamBase = PS2_MEM_ReadUInt(BF2_CAM_BASE_PTR) + 0x1C8; // 1AD86B0 + 1C8 = 1AD8878
+	tempSoldierCamBase = PS2_MEM_ReadUInt(tempSoldierCamBase)+(slot * 4); // 1DDA760
+	tempSoldierCamBase = PS2_MEM_ReadUInt(tempSoldierCamBase); // 7F8EF0
+	tempSoldierCamBase = PS2_MEM_ReadUInt(tempSoldierCamBase) + 0x1C; // 1B11420 + 1C = 1B1143C
+	tempSoldierCamBase = PS2_MEM_ReadUInt(tempSoldierCamBase);
 
+	//printf("tempsoldiercambase: %8x\n", tempSoldierCamBase);
 
 	// TODO: sanity check
 	//if (tempSoldierCamBase){
@@ -110,6 +114,20 @@ static uint8_t PS2_BF2_DetectInputBase(void)
 	// TODO: sanity check
 	if (tempInputBase){
 	 	inputBase = tempInputBase;
+	 	return 1;
+	}
+
+	return 0;
+}
+
+static uint8_t PS2_BF2_DetectVehicleBase(void)
+{
+	uint32_t tempVehicleBase = PS2_MEM_ReadUInt(BF2_VEHICLE_BASE);
+	tempVehicleBase = PS2_MEM_ReadUInt(tempVehicleBase + 0x48);
+
+	// TODO: sanity check
+	if (tempVehicleBase){
+	 	inputBase = tempVehicleBase;
 	 	return 1;
 	}
 
